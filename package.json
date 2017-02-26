@@ -1,0 +1,16 @@
+{
+  "name": "smart_charging",
+  "version": "1.0.0",
+  "description": "Gather data from IoT device and display it on graphical interface",
+  "main": "server.js",
+  "scripts": {},
+  "author": "Frederik Held <kontakt@frederikheld.de>",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "express": "^4.14.1",
+    "johnny-five": "^0.10.6",
+    "serialport": "1.7.4",
+    "serve-static": "^1.11.2",
+    "socket.io": "^1.7.3"
+  }
+}
