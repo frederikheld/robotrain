@@ -11,6 +11,7 @@
     "johnny-five": "^0.10.6",
     "serialport": "1.7.4",
     "serve-static": "^1.11.2",
-    "socket.io": "^1.7.3"
+    "socket.io": "^1.7.3",
+    "udp-serial": "^0.2.0"
   }
 }
