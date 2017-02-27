@@ -1,6 +1,8 @@
 # robo-train
 Remote controllable LEGO train.
 
+The train's heart is a RasPi that is connected to a local network via WiFi. This RasPi is equipped with a motor shield which is controlled via johnny-five. It is also running a socket.io server that provides a web ui that can be accessed from all devices that are in the same network.
+
 ## Installation
 
 Load ```StandardFirmata.ino``` from the examples in the standard Arduino IDE onto your Arduino.
@@ -31,10 +33,6 @@ Just browse to the server's IP or hostname on port ```4242```. So for hostname `
 http://robotrain:4242/
 ```
 You can open as many cockpits as you want on different clients.
-
-## Background
-
-The train is controlled by an Arduino that is equipped with a motor shield. Communication between server and train via johnny-five. Therefore a USB connection between Server and Arduino is still needed, so right now the train isn't really remote controllable.
 
 ## Server is using npm packages:
     * express
