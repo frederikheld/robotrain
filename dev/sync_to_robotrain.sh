@@ -2,7 +2,7 @@
 
 # Run this script on the dev machine from the root of "robo-train" repository
 # as follows to sync this package to the robotrain:
-$ ssh dev/sync_to_robotrain.sh
+# $ sh dev/sync_to_robotrain.sh
 
 rsync -avze ssh --exclude=.git --exclude=node_modules . pi@robotrain:/home/pi/robotrain
 
