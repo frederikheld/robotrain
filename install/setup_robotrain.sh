@@ -17,7 +17,9 @@ sudo apt-get install wiringpi
 #   INSTALL NODE.JS
 #
 
-# See: http://node-arm.herokuapp.com/
+# Remove legacy node.js (which might be pre-installed and will prevent the installation of the new version):
+sudo apt-get uninstall nodejs-legacy
+# See: https://www.packtpub.com/books/content/programming-raspberry-pi-robots-javascript
 
 # Install gcc/g++ 4.8:
 sudo apt-get update
@@ -33,3 +35,8 @@ sudo dpkg -i node_latest_armhf.deb
 
 # Check installation
 # node -v
+
+# See: http://node-arm.herokuapp.com/
+
+# Install node packet manager:
+sudo apt-get install npm
