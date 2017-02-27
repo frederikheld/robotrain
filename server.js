@@ -1,10 +1,13 @@
+'use strict'
+
 //
 //      CONFIG
 //
 
 // Config:
 var config = {
-    "port": 4242
+    "hostname" : "robotrain",
+    "socketio_port": 4242
 }
 
 
@@ -35,15 +38,29 @@ function updateValue(currValue, updateValue) {
 
 
 //
-//      SERVER
+//      FUNCTIONS
 //
 
-// Create server:
+// Emit new value to all clients:
+function emitValue(value) {
+    console.log("[socket.io] Value updated: " + value);
+    io.sockets.emit("value_update", value);
+}
+
+
+//
+//      SOCKET.IO SERVER
+//
+//      socket.io server to receive events from
+//      and update all connected clients
+//
+
+// Create socket.io server:
 var express = require("express");
 var path = require("path");
 var app = express();
-var server = app.listen(config.port, function() {
-    console.log(Date.now() + " [socket.io] LISTENING on port " + config.port);
+var server = app.listen(config.socketio_port, function() {
+    console.log(Date.now() + " [socket.io] LISTENING on port " + config.socketio_port);
 });
 var io = require("socket.io").listen(server);
 
@@ -55,7 +72,7 @@ app.get("/", function(req, res) {
     res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// Communicate mit clients:
+// Communicate with clients:
 io.sockets.on("connection", function(socket) {
 
     // Send welcome message and initial value to new client:
@@ -77,7 +94,7 @@ io.sockets.on("connection", function(socket) {
     socket.on("gui_value_update", function(data) {
         console.log(Date.now() + " [socket.io] RECEIVING \"gui_value_update\" event from client: " + data);
         value = updateValue(value, data);
-        emitValueUpdate(value);
+        emitValue(value);
     });
 
 });
@@ -98,8 +115,8 @@ var board = new five.Board();
 
 // Set up board features:
 board.on("ready", function() {
+    console.log("[j5] JohnnyFive ready");
 
-    console.log("[j5] Connected to board.");
 
     var buttonPlus = new five.Button("7");
     var buttonMinus = new five.Button("6");
