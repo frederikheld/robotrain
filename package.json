@@ -1,16 +1,15 @@
 {
-  "name": "smart_charging",
+  "name": "robo-train",
   "version": "1.0.0",
-  "description": "Gather data from IoT device and display it on graphical interface",
+  "description": "Remote controllable LEGO train. Package is to be installed on a RasPi that serves as the heart and brain of the train.",
   "main": "server.js",
   "scripts": {},
   "author": "Frederik Held <kontakt@frederikheld.de>",
   "license": "GPL-3.0",
   "dependencies": {
     "express": "^4.14.1",
-    "johnny-five": "^0.10.6",
-    "raspi-io": "^7.2.4",
     "serve-static": "^1.11.2",
-    "socket.io": "^1.7.3"
+    "socket.io": "^1.7.3",
+    "wiring-pi": "^2.2.1"
   }
 }
