@@ -49,8 +49,6 @@ wpi.digitalWrite(pin_dir, 0);
 var pwm_value = 0;
 console.log("pwm_value = " + pwm_value);
 
-var last_click = 0;
-
 setInterval(function() {
 
     if (1 == wpi.digitalRead(pin_btn_dn)) {
