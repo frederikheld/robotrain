@@ -1,7 +1,7 @@
 // -- DEVICE
 
 // identity:
-#define DEVICE_ID "0" // has to be unique within the Pot Pourri network!
+#define DEVICE_ID "train-0" // has to be unique within the Robotrain network!
 
 // pinning:
 #define PIN_BUTTON_UP D0
@@ -30,12 +30,12 @@
 
 // -- MQTT TOPICS
 
-#define MQTT_TOPIC_SPEED_NOMINAL "robotrain/motor-control/speed/nominal"
-#define MQTT_TOPIC_SPEED_ACTUAL "robotrain/motor-control/speed/actual"
+#define MQTT_TOPIC_SPEED_NOMINAL "robotrain/drivetrain/speed/nominal"
+#define MQTT_TOPIC_SPEED_ACTUAL "robotrain/drivetrain/speed/actual"
 
 
 // -- VALUES
 
-#define SPEED_NOMINAL_STEP 10 // steps to increas/decrease "speed nominal" with each click of a button
 #define SPEED_NOMINAL_MIN 0 // min value of "speed nominal"
 #define SPEED_NOMINAL_MAX 100 // max value of "speed nominal"
+#define SPEED_NOMINAL_STEP 10 // steps to increase/decrease "speed nominal" with each click of a button
