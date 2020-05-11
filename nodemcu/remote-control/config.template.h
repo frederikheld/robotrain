@@ -32,3 +32,10 @@
 
 #define MQTT_TOPIC_SPEED_NOMINAL "robotrain/motor-control/speed/nominal"
 #define MQTT_TOPIC_SPEED_ACTUAL "robotrain/motor-control/speed/actual"
+
+
+// -- VALUES
+
+#define SPEED_NOMINAL_STEP 10 // steps to increas/decrease "speed nominal" with each click of a button
+#define SPEED_NOMINAL_MIN 0 // min value of "speed nominal"
+#define SPEED_NOMINAL_MAX 100 // max value of "speed nominal"

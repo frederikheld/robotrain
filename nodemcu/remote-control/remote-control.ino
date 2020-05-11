@@ -234,10 +234,10 @@ void loop() {
   if (digitalRead(PIN_BUTTON_DOWN) == HIGH) {
 
     // update counter:
-    if (counter > 0) {
-      counter--;
+    if (counter > SPEED_NOMINAL_MIN) {
+      counter -= SPEED_NOMINAL_STEP;
     } else {
-      counter = 0;
+      counter = SPEED_NOMINAL_MIN;
     }
 
     // update display:
@@ -262,7 +262,11 @@ void loop() {
   if (digitalRead(PIN_BUTTON_UP) == HIGH) {
 
     // update counter:
-    counter++;
+    if (counter < SPEED_NOMINAL_MAX) {
+      counter += SPEED_NOMINAL_STEP;
+    } else {
+      counter = SPEED_NOMINAL_MAX;
+    }
 
     // update display:
     u8x8.drawString(6, 2, "HIGH");
