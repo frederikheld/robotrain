@@ -2,7 +2,7 @@
 
 #include <ESP8266WiFi.h>  // WiFi
 #include <PubSubClient.h> // MQTT
-#include <U8x8lib.h>      // OLED display
+#include <U8g2lib.h>      // OLED display
 
 
 // -- config
@@ -19,7 +19,7 @@ WiFiClient wifiClient;
 PubSubClient mqttClient(wifiClient);
 
 // OLED display:
-U8X8_SSD1306_128X64_NONAME_SW_I2C u8x8(PIN_DISPLAY_SCL, PIN_DISPLAY_SDA, U8X8_PIN_NONE);
+U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, PIN_DISPLAY_SCL, PIN_DISPLAY_SDA, U8X8_PIN_NONE);
 
 
 // -- define global variables:
@@ -30,7 +30,8 @@ uint8_t button_down_last_value;
 bool mqtt_message_is_received = false;
 char* mqtt_received_message;
 
-int counter = 0;
+int speed_nominal = 0;
+int speed_actual = 0;
 
 
 // -- functions
@@ -194,6 +195,46 @@ void mqttMessageReceivedCallback(const char* topic, const byte* payload, const u
     mqtt_received_message = result;
 }
 
+void drawSpeedometer(int speed_actual_percent, int speed_nominal_percent) {
+
+  // calculate pixel values:
+  uint8_t speed_actual_width = (int)(128.0 * ((float)speed_actual_percent / 100));
+  uint8_t speed_nominal_pos = (int)(128.0 * ((float)speed_nominal_percent / 100));
+
+  // actual speed as bar on top of display:
+  u8g2.drawBox(0, 0, speed_actual_width, 16);
+
+  // nominal speed as two XOR triangles
+  // as overlay on the actual speed bar:
+  u8g2.setDrawColor(2);
+
+  // top triangle:
+  u8g2.drawTriangle(
+    speed_nominal_pos, 5,
+    speed_nominal_pos - 4, 0,
+    speed_nominal_pos + 4, 0
+  );
+
+  // bottom triangle:
+  u8g2.drawTriangle(
+    speed_nominal_pos, 11,
+    speed_nominal_pos + 4, 16,
+    speed_nominal_pos - 4, 16
+  );
+
+}
+
+void setSpeed(int speed_nominal_percent, int speed_actual_percent) {
+
+  // update display:
+  u8g2.clearBuffer();
+  drawSpeedometer(speed_actual_percent, speed_nominal_percent);
+  u8g2.sendBuffer();
+
+  // send mqtt message:
+  mqttSendMessage(String(MQTT_TOPIC_SPEED_NOMINAL).c_str(), String(speed_nominal_percent).c_str());
+}
+
 void setup() {
   
   // start serial:
@@ -204,14 +245,7 @@ void setup() {
   pinMode(PIN_BUTTON_DOWN, INPUT);
 
   // init display:
-  u8x8.begin();
-  u8x8.setPowerSave(0);
-  u8x8.setFont(u8x8_font_8x13_1x2_f);
-  u8x8.drawString(0,2,"UP:");
-  u8x8.drawString(0,4,"DOWN:");
-  u8x8.drawString(6,2,"-");
-  u8x8.drawString(6,4,"-");
-
+  u8g2.begin();
 
   // connect to wifi:
   if (!wifiConnect(WIFI_SSID, WIFI_SECRET, WIFI_CONNECT_RETRY_DELAY, WIFI_CONNECT_RETRY_TIMEOUT)) {
@@ -225,6 +259,14 @@ void setup() {
   if(!mqttConnect(DEVICE_ID, mqttClient, MQTT_SERVER, MQTT_PORT, MQTT_CONNECT_RETRY_DELAY, MQTT_CONNECT_RETRY_TIMEOUT)) {
     Serial.println("Could not connect to MQTT broker");
   }
+
+  // DEBUG:
+  randomSeed(analogRead(A0));
+
+  // update display:
+  u8g2.clearBuffer();
+  drawSpeedometer(speed_actual, speed_nominal);
+  u8g2.sendBuffer();
   
   
 }
@@ -233,57 +275,49 @@ void loop() {
 
   if (digitalRead(PIN_BUTTON_DOWN) == HIGH) {
 
-    // update counter:
-    if (counter > SPEED_NOMINAL_MIN) {
-      counter -= SPEED_NOMINAL_STEP;
+    // DEBUG:
+    speed_actual = random(0, 100);
+
+    // update speed_nominal:
+    if (speed_nominal > SPEED_NOMINAL_MIN) {
+      speed_nominal -= SPEED_NOMINAL_STEP;
     } else {
-      counter = SPEED_NOMINAL_MIN;
+      speed_nominal = SPEED_NOMINAL_MIN;
     }
 
-    // update display:
-    u8x8.drawString(6, 4, "HIGH");
-    u8x8.clearLine(0);
-    u8x8.clearLine(1);
-    u8x8.drawString(0, 0, String(counter).c_str());
-
-    // send mqtt message:
-    mqttSendMessage(String(MQTT_TOPIC_SPEED_NOMINAL).c_str(), String(counter).c_str());
+    // update display and send speed via mqtt:
+    setSpeed(speed_nominal, speed_actual);
 
     // wait for falling edge:
     while (digitalRead(PIN_BUTTON_DOWN) == HIGH) {
       delay(100);
     }
 
-    // update display:
-    u8x8.drawString(6, 4, "LOW ");
   }
   
   // read buttons:
   if (digitalRead(PIN_BUTTON_UP) == HIGH) {
 
-    // update counter:
-    if (counter < SPEED_NOMINAL_MAX) {
-      counter += SPEED_NOMINAL_STEP;
+    // DEBUG:
+    speed_actual = random(0, 100);
+
+    // update speed_nominal:
+    if (speed_nominal < SPEED_NOMINAL_MAX) {
+      speed_nominal += SPEED_NOMINAL_STEP;
     } else {
-      counter = SPEED_NOMINAL_MAX;
+      speed_nominal = SPEED_NOMINAL_MAX;
     }
 
-    // update display:
-    u8x8.drawString(6, 2, "HIGH");
-    u8x8.clearLine(0);
-    u8x8.clearLine(1);
-    u8x8.drawString(0, 0, String(counter).c_str());
-
-    // send mqtt message:
-    mqttSendMessage(String(MQTT_TOPIC_SPEED_NOMINAL).c_str(), String(counter).c_str());
+    // update display and send speed via mqtt:
+    setSpeed(speed_nominal, speed_actual);
 
     // wait for falling edge:
     while (digitalRead(PIN_BUTTON_UP) == HIGH) {
       delay(100);
     }
 
-    // update display:
-    u8x8.drawString(6, 2, "LOW ");
   }
+
+  delay(10);
   
 }
