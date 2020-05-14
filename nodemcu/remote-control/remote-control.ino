@@ -307,22 +307,22 @@ void loop() {
     }
 
     // change speed in forward mode:
-    // if (direction_nominal == "FWD") {
+    if (direction_nominal == "FWD") {
       if (speed_nominal - SPEED_NOMINAL_STEP > 0) {
         speed_nominal -= SPEED_NOMINAL_STEP;
       } else {
         speed_nominal = 0;
       }
-    // }
+    }
 
-    // // change speed in reversed mode:
-    // if (direction_nominal == "REV") {
-    //   if (speed_nominal + SPEED_NOMINAL_STEP < 0) {
-    //     speed_nominal += SPEED_NOMINAL_STEP;
-    //   } else {
-    //     speed_nominal = 0;
-    //   }
-    // }
+    // change speed in reversed mode:
+    if (direction_nominal == "REV") {
+      if (speed_nominal + SPEED_NOMINAL_STEP < 0) {
+        speed_nominal += SPEED_NOMINAL_STEP;
+      } else {
+        speed_nominal = 0;
+      }
+    }
 
     // update display and send speed via mqtt:
     setSpeed(speed_nominal, speed_actual);
@@ -349,22 +349,22 @@ void loop() {
       }
     }
 
-    // // change speed in reversed mode:
-    // if (direction_nominal == "REV") {
-    //   if (speed_nominal - SPEED_NOMINAL_STEP > SPEED_NOMINAL_MIN) {
-    //     speed_nominal -= SPEED_NOMINAL_STEP;
-    //   } else {
-    //     speed_nominal = SPEED_NOMINAL_MIN;
-    //   }
-    // }
-
+    // change speed in reversed mode:
     if (direction_nominal == "REV") {
-      if (speed_nominal + SPEED_NOMINAL_STEP < abs(SPEED_NOMINAL_MIN)) {
-        speed_nominal += SPEED_NOMINAL_STEP;
+      if (speed_nominal - SPEED_NOMINAL_STEP > SPEED_NOMINAL_MIN) {
+        speed_nominal -= SPEED_NOMINAL_STEP;
       } else {
-        speed_nominal = abs(SPEED_NOMINAL_MIN);
+        speed_nominal = SPEED_NOMINAL_MIN;
       }
     }
+
+    // if (direction_nominal == "REV") {
+    //   if (speed_nominal + SPEED_NOMINAL_STEP < abs(SPEED_NOMINAL_MIN)) {
+    //     speed_nominal += SPEED_NOMINAL_STEP;
+    //   } else {
+    //     speed_nominal = abs(SPEED_NOMINAL_MIN);
+    //   }
+    // }
 
     // update display and send speed via mqtt:
     setSpeed(speed_nominal, speed_actual);
