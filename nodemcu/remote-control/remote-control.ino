@@ -32,6 +32,8 @@ char* mqtt_received_message;
 
 int speed_nominal = 0;
 int speed_actual = 0;
+char* direction_nominal = "FWD";
+char* direction_actual = "FWD";
 
 
 // -- functions
@@ -197,9 +199,13 @@ void mqttMessageReceivedCallback(const char* topic, const byte* payload, const u
 
 void drawSpeedometer(int speed_actual_percent, int speed_nominal_percent) {
 
+  Serial.println(speed_nominal_percent);
+
   // calculate pixel values:
-  uint8_t speed_actual_width = (int)(128.0 * ((float)speed_actual_percent / 100));
-  uint8_t speed_nominal_pos = (int)(128.0 * ((float)speed_nominal_percent / 100));
+  uint8_t speed_actual_width = (int)(128.0 * ((float)abs(speed_actual_percent) / 100));
+  uint8_t speed_nominal_pos = (int)(128.0 * ((float)abs(speed_nominal_percent) / 100));
+
+  Serial.println(speed_nominal_pos);
 
   // actual speed as bar on top of display:
   u8g2.drawBox(0, 0, speed_actual_width, 16);
@@ -222,6 +228,10 @@ void drawSpeedometer(int speed_actual_percent, int speed_nominal_percent) {
     speed_nominal_pos - 4, 16
   );
 
+  // print text if direction is reversed:
+  u8g2.setFont(u8g2_font_unifont_tf);
+  u8g2.drawStr(103, 26, direction_nominal);
+
 }
 
 void setSpeed(int speed_nominal_percent, int speed_actual_percent) {
@@ -232,7 +242,10 @@ void setSpeed(int speed_nominal_percent, int speed_actual_percent) {
   u8g2.sendBuffer();
 
   // send mqtt message:
-  mqttSendMessage(String(MQTT_TOPIC_SPEED_NOMINAL).c_str(), String(speed_nominal_percent).c_str());
+  mqttSendMessage(
+    String(MQTT_TOPIC_SPEED_NOMINAL).c_str(),
+    String(speed_nominal_percent).c_str()
+  );
 }
 
 void setup() {
@@ -278,11 +291,31 @@ void loop() {
     // DEBUG:
     speed_actual = random(0, 100);
 
-    // update speed_nominal:
-    if (speed_nominal > SPEED_NOMINAL_MIN) {
-      speed_nominal -= SPEED_NOMINAL_STEP;
-    } else {
-      speed_nominal = SPEED_NOMINAL_MIN;
+    // change direction if speed is zero:
+    if (speed_nominal == 0) {
+      if (direction_nominal == "FWD") {
+        direction_nominal = "REV";
+      } else {
+        direction_nominal = "FWD";
+      }
+    }
+
+    // change speed in forward mode:
+    if (direction_nominal == "FWD") {
+      if (speed_nominal - SPEED_NOMINAL_STEP > 0) {
+        speed_nominal -= SPEED_NOMINAL_STEP;
+      } else {
+        speed_nominal = 0;
+      }
+    }
+
+    // change speed in reversed mode:
+    if (direction_nominal == "REV") {
+      if (speed_nominal + SPEED_NOMINAL_STEP < 0) {
+        speed_nominal += SPEED_NOMINAL_STEP;
+      } else {
+        speed_nominal = 0;
+      }
     }
 
     // update display and send speed via mqtt:
@@ -301,11 +334,22 @@ void loop() {
     // DEBUG:
     speed_actual = random(0, 100);
 
-    // update speed_nominal:
-    if (speed_nominal < SPEED_NOMINAL_MAX) {
-      speed_nominal += SPEED_NOMINAL_STEP;
-    } else {
-      speed_nominal = SPEED_NOMINAL_MAX;
+    // change speed in forward mode:
+    if (direction_nominal == "FWD") {
+      if (speed_nominal + SPEED_NOMINAL_STEP < SPEED_NOMINAL_MAX) {
+        speed_nominal += SPEED_NOMINAL_STEP;
+      } else {
+        speed_nominal = SPEED_NOMINAL_MAX;
+      }
+    }
+
+    // change speed in reversed mode:
+    if (direction_nominal == "REV") {
+      if (speed_nominal - SPEED_NOMINAL_STEP > SPEED_NOMINAL_MIN) {
+        speed_nominal -= SPEED_NOMINAL_STEP;
+      } else {
+        speed_nominal = SPEED_NOMINAL_MIN;
+      }
     }
 
     // update display and send speed via mqtt:
