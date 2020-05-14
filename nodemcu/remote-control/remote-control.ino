@@ -241,7 +241,13 @@ void setSpeed(int speed_nominal_percent, int speed_actual_percent) {
   drawSpeedometer(speed_actual_percent, speed_nominal_percent);
   u8g2.sendBuffer();
 
-  // send mqtt message:
+  // send direction:
+  mqttSendMessage(
+    String(MQTT_TOPIC_DIRECTION_NOMINAL).c_str(),
+    direction_nominal
+  );
+
+  // send speed:
   mqttSendMessage(
     String(MQTT_TOPIC_SPEED_NOMINAL).c_str(),
     String(speed_nominal_percent).c_str()
@@ -301,22 +307,22 @@ void loop() {
     }
 
     // change speed in forward mode:
-    if (direction_nominal == "FWD") {
+    // if (direction_nominal == "FWD") {
       if (speed_nominal - SPEED_NOMINAL_STEP > 0) {
         speed_nominal -= SPEED_NOMINAL_STEP;
       } else {
         speed_nominal = 0;
       }
-    }
+    // }
 
-    // change speed in reversed mode:
-    if (direction_nominal == "REV") {
-      if (speed_nominal + SPEED_NOMINAL_STEP < 0) {
-        speed_nominal += SPEED_NOMINAL_STEP;
-      } else {
-        speed_nominal = 0;
-      }
-    }
+    // // change speed in reversed mode:
+    // if (direction_nominal == "REV") {
+    //   if (speed_nominal + SPEED_NOMINAL_STEP < 0) {
+    //     speed_nominal += SPEED_NOMINAL_STEP;
+    //   } else {
+    //     speed_nominal = 0;
+    //   }
+    // }
 
     // update display and send speed via mqtt:
     setSpeed(speed_nominal, speed_actual);
@@ -343,12 +349,20 @@ void loop() {
       }
     }
 
-    // change speed in reversed mode:
+    // // change speed in reversed mode:
+    // if (direction_nominal == "REV") {
+    //   if (speed_nominal - SPEED_NOMINAL_STEP > SPEED_NOMINAL_MIN) {
+    //     speed_nominal -= SPEED_NOMINAL_STEP;
+    //   } else {
+    //     speed_nominal = SPEED_NOMINAL_MIN;
+    //   }
+    // }
+
     if (direction_nominal == "REV") {
-      if (speed_nominal - SPEED_NOMINAL_STEP > SPEED_NOMINAL_MIN) {
-        speed_nominal -= SPEED_NOMINAL_STEP;
+      if (speed_nominal + SPEED_NOMINAL_STEP < abs(SPEED_NOMINAL_MIN)) {
+        speed_nominal += SPEED_NOMINAL_STEP;
       } else {
-        speed_nominal = SPEED_NOMINAL_MIN;
+        speed_nominal = abs(SPEED_NOMINAL_MIN);
       }
     }
 
