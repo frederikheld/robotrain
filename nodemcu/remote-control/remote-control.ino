@@ -358,14 +358,6 @@ void loop() {
       }
     }
 
-    // if (direction_nominal == "REV") {
-    //   if (speed_nominal + SPEED_NOMINAL_STEP < abs(SPEED_NOMINAL_MIN)) {
-    //     speed_nominal += SPEED_NOMINAL_STEP;
-    //   } else {
-    //     speed_nominal = abs(SPEED_NOMINAL_MIN);
-    //   }
-    // }
-
     // update display and send speed via mqtt:
     setSpeed(speed_nominal, speed_actual);
 
