@@ -202,13 +202,37 @@ void drawSpeedometer(int speed_actual_percent, int speed_nominal_percent) {
   Serial.println(speed_nominal_percent);
 
   // calculate pixel values:
-  uint8_t speed_actual_width = (int)(128.0 * ((float)abs(speed_actual_percent) / 100));
-  uint8_t speed_nominal_pos = (int)(128.0 * ((float)abs(speed_nominal_percent) / 100));
+  int scaling_factor;
+  int limiter_percent;
+  char* limiter_direction;
+  if (SPEED_NOMINAL_MAX > abs(SPEED_NOMINAL_MIN)) {
+    scaling_factor = SPEED_NOMINAL_MAX;
+    limiter_percent = abs(SPEED_NOMINAL_MIN);
+    limiter_direction = "REV";
+  } else {
+    scaling_factor = abs(SPEED_NOMINAL_MIN);
+    limiter_percent = SPEED_NOMINAL_MAX;
+    limiter_direction = "FWD";
+  }
+  uint8_t speed_actual_width = (int)(128.0 * ((float)abs(speed_actual_percent) / scaling_factor));
+  uint8_t speed_nominal_pos = (int)(128.0 * ((float)abs(speed_nominal_percent) / scaling_factor));
+
+  uint8_t limiter_pos = 0;
+  if (direction_nominal == limiter_direction) {
+    limiter_pos = (int)(128.0 * ((float)abs(limiter_percent) / scaling_factor));
+  }
 
   Serial.println(speed_nominal_pos);
 
   // actual speed as bar on top of display:
   u8g2.drawBox(0, 0, speed_actual_width, 16);
+
+  // limiter:
+  if (limiter_direction == direction_nominal) {
+    u8g2.setDrawColor(2);
+    u8g2.drawLine(limiter_pos, 0, limiter_pos, 15);
+    u8g2.drawLine(limiter_pos + 1, 8, 128, 8);
+  }
 
   // nominal speed as two XOR triangles
   // as overlay on the actual speed bar:
