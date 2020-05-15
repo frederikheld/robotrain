@@ -185,19 +185,6 @@ void mqttMessageReceivedCallback(char* topic, const byte* payload, const unsigne
       result[length] = '\0';
     }
 
-    // DEBUG:
-    Serial.print("mMRC(): topic is ");
-    Serial.println(topic);
-    // Serial.println(MQTT_TOPIC_SPEED_NOMINAL);
-
-    if (strcmp(topic, MQTT_TOPIC_SPEED_NOMINAL) == 0) {
-      Serial.println("mMRC(): write to var speed_nominal");
-    } else if (strcmp(topic, MQTT_TOPIC_DIRECTION_NOMINAL) == 0) {
-      Serial.println("mMRC(): write to var direction_nominal");
-    } else {
-      Serial.println("mMRC(): topic not of interest");
-    }
-
     // return value:
     mqtt_message_was_received = true;
     mqtt_received_topic = topic;
@@ -214,33 +201,28 @@ void ledBlink(uint8_t pin) {
 }
 
 
-void motorSetSpeedPercent(int speed_percent, bool reversed = false) {
+void setMotorSpeedPercent(int speed_percent, char* direction = "FWD") {
 
   // set pwm value:
-  const int analog_value               = (int)(1024.0 * ((float)speed_percent / 100));
-  // const int complementary_analog_value = (int)(1024.0 - analog_value);
-  // info: analogWrite accepts 0..1024, setMotor accepts 0..100.
+  int analog_value = (int)(1024.0 * (float)abs(speed_percent) / 100.0);
+  // info: analogWrite accepts 0..1024, setMotorSpeedPercent accepts 0..100.
   // TODO: Arduino provides a map() function for this purpose!
   
-  if (reversed) {
-    analogWrite(PIN_MOTOR_1_DIRECTION, LOW);
-    analogWrite(PIN_MOTOR_1_PWM, analog_value);
+  if (strcmp(direction, "FWD") == 0) {
+    analogWrite(PIN_MOTOR_1_A, analog_value);
+    analogWrite(PIN_MOTOR_1_B, HIGH);
+  } else if (strcmp(direction, "REV") == 0) {
+    analogWrite(PIN_MOTOR_1_A, HIGH);
+    analogWrite(PIN_MOTOR_1_B, analog_value);
   } else {
-    analogWrite(PIN_MOTOR_1_DIRECTION, HIGH);
-    analogWrite(PIN_MOTOR_1_PWM, analog_value);
+    Serial.print("ERROR: invalid direction passed to setMotorSpeedPercent(): ");
+    Serial.println(direction);
   }
 
-  Serial.print("Set motor speed to ");
+  Serial.print("Set motor to ");
   Serial.print(analog_value);
-  Serial.print(" (");
-  Serial.print(speed_percent);
-  Serial.print(")");
-  
-  if (reversed) {
-    Serial.println(" reversed");
-  } else {
-    Serial.println();
-  }
+  Serial.print(" ");
+  Serial.println(direction);
   
 }
 
@@ -254,10 +236,10 @@ void setup() {
   digitalWrite(PIN_LED_MQTT_RECEIVED, LOW);
   
   // init motors:
-  pinMode(PIN_MOTOR_1_PWM, OUTPUT);
-  digitalWrite(PIN_MOTOR_1_PWM, LOW);
-  pinMode(PIN_MOTOR_1_DIRECTION, OUTPUT);
-  digitalWrite(PIN_MOTOR_1_DIRECTION, LOW);
+  pinMode(PIN_MOTOR_1_B, OUTPUT);
+  digitalWrite(PIN_MOTOR_1_B, LOW);
+  pinMode(PIN_MOTOR_1_A, OUTPUT);
+  digitalWrite(PIN_MOTOR_1_A, LOW);
 
   // connect to wifi:
   if (!wifiConnect(WIFI_SSID, WIFI_SECRET, WIFI_CONNECT_RETRY_DELAY, WIFI_CONNECT_RETRY_TIMEOUT)) {
@@ -275,6 +257,11 @@ void setup() {
   mqttClient.subscribe(String(MQTT_TOPIC_SPEED_NOMINAL).c_str());
   Serial.print("Subscribed to topic '");
   Serial.print(MQTT_TOPIC_SPEED_NOMINAL);
+  Serial.println("'.");
+
+  mqttClient.subscribe(String(MQTT_TOPIC_DIRECTION_NOMINAL).c_str());
+  Serial.print("Subscribed to topic '");
+  Serial.print(MQTT_TOPIC_DIRECTION_NOMINAL);
   Serial.println("'.");  
   
 }
@@ -285,12 +272,8 @@ void loop() {
     mqttClient.loop();
     if (mqtt_message_was_received) {
 
-      Serial.print("loop(): message received on topic ");
-      Serial.println(mqtt_received_topic);
-
       // read nominal direction:
       if (strcmp(mqtt_received_topic, MQTT_TOPIC_DIRECTION_NOMINAL) == 0) {
-        Serial.println("loop(): message was received on topic direction/nominal");
         if (strcmp(mqtt_received_message, "FWD") == 0) {
           direction_nominal = "FWD";
         } else if (strcmp(mqtt_received_message, "REV") == 0) {
@@ -307,13 +290,11 @@ void loop() {
 
       // read nominal speed:
       if (strcmp(mqtt_received_topic, MQTT_TOPIC_SPEED_NOMINAL) == 0) {
-        Serial.print("loop(): message was received on topic speed/nominal was ");
-        Serial.println(mqtt_received_message);
         if (
           String(mqtt_received_message).toInt() <= SPEED_NOMINAL_MAX &&
           String(mqtt_received_message).toInt() >= SPEED_NOMINAL_MIN
         ) {
-          speed_nominal == String(mqtt_received_message).toInt();
+          speed_nominal = String(mqtt_received_message).toInt();
         } else {
           Serial.println("ERROR: received value for 'speed_nominal' out of range!");
           Serial.print("    value: ");
@@ -321,16 +302,11 @@ void loop() {
         }
       }
 
-      // acknowledge:
+      // acknowledge message:
       mqtt_message_was_received = false;
 
-      // Serial.println("Message received:");
-      // Serial.print("    topic:  ");
-      // Serial.println(mqtt_received_topic);
-      // Serial.print("    message: ");
-      // Serial.println(mqtt_received_message);
-
-      //motorSetSpeedPercent(String(mqtt_received_message).toInt(), false);
+      // set motor speed:
+      setMotorSpeedPercent(speed_nominal, direction_nominal);
 
     }
 
