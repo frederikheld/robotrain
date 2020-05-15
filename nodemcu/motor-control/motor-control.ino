@@ -189,11 +189,14 @@ void mqttMessageReceivedCallback(char* topic, const byte* payload, const unsigne
       result[length] = '\0';
     }
 
+    Serial.print("mMRC(): message received on topic ");
+    Serial.println(topic);
+
     // store message according to topic:
-    if (topic == MQTT_TOPIC_DIRECTION_NOMINAL) {
+    if (strcmp(topic, MQTT_TOPIC_DIRECTION_NOMINAL) == 0) {
       mqtt_message_direction_nominal_was_received = true;
       mqtt_received_message_direction_nominal = result;
-    } else if (topic == MQTT_TOPIC_SPEED_NOMINAL) {
+    } else if (strcmp(topic, MQTT_TOPIC_SPEED_NOMINAL) == 0) {
       mqtt_message_speed_nominal_was_received = true;
       mqtt_received_message_speed_nominal = result;
     }
@@ -273,6 +276,7 @@ void setup() {
   }
 
   mqttClient.subscribe(String(MQTT_TOPIC_SPEED_NOMINAL).c_str());
+  mqttClient.subscribe(String(MQTT_TOPIC_DIRECTION_NOMINAL).c_str());
   Serial.print("Subscribed to topic '");
   Serial.print(MQTT_TOPIC_SPEED_NOMINAL);
   Serial.println("'.");  
@@ -288,16 +292,19 @@ void loop() {
       // read nominal direction:
       // if (mqtt_received_message_topic == MQTT_TOPIC_DIRECTION_NOMINAL) {
       if (mqtt_message_direction_nominal_was_received) {
-        if (mqtt_received_message_topic == "FWD") {
+
+        Serial.print("loop(): Message received on topic direction_nominal: ");
+        Serial.println(mqtt_received_message_direction_nominal);
+
+        if (strcmp(mqtt_received_message_direction_nominal, "FWD") == 0) {
           direction_nominal = "FWD";
-        } else if (mqtt_received_message_topic == "REV") {
+        } else if (strcmp(mqtt_received_message_direction_nominal, "REV") == 0) {
           direction_nominal = "REV";
         } else {
           Serial.println("ERROR: unexpected message received!");
-          Serial.print("    topic:  ");
-          Serial.println(mqtt_received_message_topic);
+          Serial.println("    topic: direction_nominal");
           Serial.print("    message:");
-          Serial.println(mqtt_received_message);
+          Serial.println(mqtt_received_message_direction_nominal);
         }
 
         // acknowledge:
@@ -307,27 +314,24 @@ void loop() {
       // read nominal speed:
       // if (mqtt_received_message_topic == MQTT_TOPIC_SPEED_NOMINAL) {
       if (mqtt_message_speed_nominal_was_received) {
+
+        Serial.print("loop(): Message received on topic speed_nominal: ");
+        Serial.println(mqtt_received_message_speed_nominal);
+
         if (
-          int(mqtt_received_message_speed_nominal) <= SPEED_NOMINAL_MAX &&
-          int(mqtt_received_message_speed_nominal) >= SPEED_NOMINAL_MIN
+          String(mqtt_received_message_speed_nominal).toInt() <= SPEED_NOMINAL_MAX &&
+          String(mqtt_received_message_speed_nominal).toInt() >= SPEED_NOMINAL_MIN
         ) {
-          speed_nominal == int(mqtt_received_message_speed_nominal);
+          speed_nominal == String(mqtt_received_message_speed_nominal).toInt();
         } else {
           Serial.println("ERROR: value 'speed_nominal' out of range!");
-          Serial.print("    message:");
-          Serial.println(mqtt_received_message_speed_nominal);
+          Serial.print("    value:");
+          Serial.println(String(mqtt_received_message_speed_nominal).toInt());
         }
 
         // acknowledge:
         mqtt_message_speed_nominal_was_received = false;
       }
-
-
-      Serial.println("Message received:");
-      Serial.print("    topic:  ");
-      Serial.println(mqtt_received_message_topic);
-      Serial.print("    message: ");
-      Serial.println(mqtt_received_message);
 
       //motorSetSpeedPercent(String(mqtt_received_message).toInt(), false);
 
