@@ -28,11 +28,13 @@
 
 // -- MQTT TOPICS
 
-#define MQTT_TOPIC_SPEED_NOMINAL "robotrain/motor-control/speed/nominal"
-#define MQTT_TOPIC_SPEED_ACTUAL "robotrain/motor-control/speed/actual"
+#define MQTT_TOPIC_SPEED_NOMINAL "robotrain/drivetrain/speed/nominal"
+#define MQTT_TOPIC_SPEED_ACTUAL "robotrain/drivetrain/speed/actual"
+#define MQTT_TOPIC_DIRECTION_NOMINAL "robotrain/drivetrain/direction/nominal"
+#define MQTT_TOPIC_DIRECTION_ACTUAL "robotrain/drivetrain/direction/actual"
 
 
 // -- VALUES
 
-#define SPEED_NOMINAL_MIN 0 // min value of "speed nominal"
 #define SPEED_NOMINAL_MAX 100 // max value of "speed nominal"
+#define SPEED_NOMINAL_MIN -100 // min value of "speed nominal"
