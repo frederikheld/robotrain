@@ -5,8 +5,8 @@
 
 // pinning:
 #define PIN_LED_MQTT_RECEIVED LED_BUILTIN
-#define PIN_MOTOR_PWM D3
-#define PIN_MOTOR_DIRECTION D4
+#define PIN_MOTOR_A D4
+#define PIN_MOTOR_B D3
 
 
 // -- CONECTIVITY
