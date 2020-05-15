@@ -32,6 +32,8 @@
 
 #define MQTT_TOPIC_SPEED_NOMINAL "robotrain/drivetrain/speed/nominal"
 #define MQTT_TOPIC_SPEED_ACTUAL "robotrain/drivetrain/speed/actual"
+#define MQTT_TOPIC_DIRECTION_NOMINAL "robotrain/drivetrain/direction/nominal"
+#define MQTT_TOPIC_DIRECTION_ACTUAL "robotrain/drivetrain/direction/actual"
 
 
 // -- VALUES
