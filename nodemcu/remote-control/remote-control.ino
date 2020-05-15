@@ -252,9 +252,16 @@ void drawSpeedometer(int speed_actual_percent, int speed_nominal_percent) {
     speed_nominal_pos - 4, 16
   );
 
-  // print text if direction is reversed:
+  // print texts:
   u8g2.setFont(u8g2_font_unifont_tf);
-  u8g2.drawStr(103, 26, direction_nominal);
+  u8g2.drawStr(0, 26, direction_nominal);
+  String speed_string = String(abs(speed_nominal)) + String("/");
+  if (direction_nominal == "FWD") {
+    speed_string += String(SPEED_NOMINAL_MAX);
+  } else {
+    speed_string += String(abs(SPEED_NOMINAL_MIN));
+  }
+  u8g2.drawStr(36, 26, speed_string.c_str());
 
 }
 
