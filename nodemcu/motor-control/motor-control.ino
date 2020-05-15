@@ -20,10 +20,18 @@ PubSubClient mqttClient(wifiClient);
 
 // -- define global variables:
 
-bool mqtt_message_was_received = false;
-char* mqtt_received_message;
+// mqtt:
+bool mqtt_message_speed_nominal_was_received = false;
+char* mqtt_received_message_speed_nominal;
 
+bool mqtt_message_direction_nominal_was_received = false;
+char* mqtt_received_message_direction_nominal;
+
+// char* mqtt_received_message_topic;
+
+// motor control:
 int speed_nominal = 0;
+char* direction_nominal = "FWD";
 
 
 // -- functions
@@ -171,7 +179,7 @@ bool mqttSendMessage(const char* topic, const char* message) {
   
 }
 
-void mqttMessageReceivedCallback(const char* topic, const byte* payload, const unsigned int length) {
+void mqttMessageReceivedCallback(char* topic, const byte* payload, const unsigned int length) {
 
     // convert byte* payload to char*:
     char* result = (char*) payload;
@@ -181,9 +189,19 @@ void mqttMessageReceivedCallback(const char* topic, const byte* payload, const u
       result[length] = '\0';
     }
 
-    // return value:
-    mqtt_message_was_received = true;
-    mqtt_received_message = result;
+    // store message according to topic:
+    if (topic == MQTT_TOPIC_DIRECTION_NOMINAL) {
+      mqtt_message_direction_nominal_was_received = true;
+      mqtt_received_message_direction_nominal = result;
+    } else if (topic == MQTT_TOPIC_SPEED_NOMINAL) {
+      mqtt_message_speed_nominal_was_received = true;
+      mqtt_received_message_speed_nominal = result;
+    }
+
+    // // return value:
+    // mqtt_message_was_received = true;
+    // mqtt_received_message_topic = topic;
+    // mqtt_received_message = result;
 }
 
 void ledBlink(uint8_t pin) {
@@ -265,21 +283,56 @@ void loop() {
 
     // check for new mqtt messages:
     mqttClient.loop();
+    // if (mqtt_message_was_received) {
 
-    // reset mqtt_message_was_received if wrong message was received:
-    if (mqtt_message_was_received) {
-      mqtt_message_was_received = false;
+      // read nominal direction:
+      // if (mqtt_received_message_topic == MQTT_TOPIC_DIRECTION_NOMINAL) {
+      if (mqtt_message_direction_nominal_was_received) {
+        if (mqtt_received_message_topic == "FWD") {
+          direction_nominal = "FWD";
+        } else if (mqtt_received_message_topic == "REV") {
+          direction_nominal = "REV";
+        } else {
+          Serial.println("ERROR: unexpected message received!");
+          Serial.print("    topic:  ");
+          Serial.println(mqtt_received_message_topic);
+          Serial.print("    message:");
+          Serial.println(mqtt_received_message);
+        }
 
-      Serial.print("Message received: '");
-      Serial.print(mqtt_received_message);
-      Serial.println("'");
+        // acknowledge:
+        mqtt_message_direction_nominal_was_received = false;
+      }
 
-      motorSetSpeedPercent(String(mqtt_received_message).toInt(), false);
+      // read nominal speed:
+      // if (mqtt_received_message_topic == MQTT_TOPIC_SPEED_NOMINAL) {
+      if (mqtt_message_speed_nominal_was_received) {
+        if (
+          int(mqtt_received_message_speed_nominal) <= SPEED_NOMINAL_MAX &&
+          int(mqtt_received_message_speed_nominal) >= SPEED_NOMINAL_MIN
+        ) {
+          speed_nominal == int(mqtt_received_message_speed_nominal);
+        } else {
+          Serial.println("ERROR: value 'speed_nominal' out of range!");
+          Serial.print("    message:");
+          Serial.println(mqtt_received_message_speed_nominal);
+        }
 
-      // ledBlink(PIN_LED_MQTT_RECEIVED);
-    }
+        // acknowledge:
+        mqtt_message_speed_nominal_was_received = false;
+      }
+
+
+      Serial.println("Message received:");
+      Serial.print("    topic:  ");
+      Serial.println(mqtt_received_message_topic);
+      Serial.print("    message: ");
+      Serial.println(mqtt_received_message);
+
+      //motorSetSpeedPercent(String(mqtt_received_message).toInt(), false);
+
+    // }
 
     // send mqtt message:
     // mqttSendMessage(String(MQTT_TOPIC_SPEED_NOMINAL).c_str(), String(counter).c_str());
-  
-}
+  }
