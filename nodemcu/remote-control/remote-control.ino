@@ -27,8 +27,9 @@ U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, PIN_DISPLAY_SCL, PIN_DISPLAY_S
 uint8_t button_up_last_value;
 uint8_t button_down_last_value;
 
-bool mqtt_message_is_received = false;
+bool mqtt_message_was_received = false;
 char* mqtt_received_message;
+char* mqtt_received_topic;
 
 int speed_nominal = 0;
 int speed_actual = 0;
@@ -146,6 +147,7 @@ bool mqttSendMessage(const char* topic, const char* message) {
   
   mqttClient.publish(topic, message, true);
 
+/*
   // wait until message was rebounced:
   // Note: This is not an implement of QoS 1 (which this library is lacking)
   //       as there will be no attempt to send the message again if it failed.
@@ -158,13 +160,13 @@ bool mqttSendMessage(const char* topic, const char* message) {
   int receive_retry_delay = MQTT_SEND_REBOUNCE_DELAY;
   int receive_retry_timeout = MQTT_SEND_REBOUNCE_TIMEOUT;
   
-  while (!mqtt_message_is_received && receive_retry_timeout > 0) {
+  while (!mqtt_message_was_received && receive_retry_timeout > 0) {
     Serial.print(".");
     mqttClient.loop();
 
-    // reset mqtt_message_is_received if wrong message was received:
-    if (mqtt_message_is_received && !strcmp(mqtt_received_message, message) == 0) {
-      mqtt_message_is_received = false;
+    // reset mqtt_message_was_received if wrong message was received:
+    if (mqtt_message_was_received && !strcmp(mqtt_received_message, message) == 0) {
+      mqtt_message_was_received = false;
     }
 
     // prepare next loop:
@@ -179,10 +181,12 @@ bool mqttSendMessage(const char* topic, const char* message) {
 
   Serial.println(" Delivered.");
   return true;
+
+*/
   
 }
 
-void mqttMessageReceivedCallback(const char* topic, const byte* payload, const unsigned int length) {
+void mqttMessageReceivedCallback(char* topic, const byte* payload, const unsigned int length) {
 
     // convert byte* payload to char*:
     char* result = (char*) payload;
@@ -193,13 +197,27 @@ void mqttMessageReceivedCallback(const char* topic, const byte* payload, const u
     }
 
     // return value:
-    mqtt_message_is_received = true;
+    mqtt_message_was_received = true;
+    mqtt_received_topic = topic;
     mqtt_received_message = result;
 }
 
-void drawSpeedometer(int speed_actual_percent, int speed_nominal_percent) {
+void sendSpeedNominal(int speed_nominal_percent) {
 
-  Serial.println(speed_nominal_percent);
+  // send direction:
+  mqttSendMessage(
+    String(MQTT_TOPIC_DIRECTION_NOMINAL).c_str(),
+    direction_nominal
+  );
+
+  // send speed:
+  mqttSendMessage(
+    String(MQTT_TOPIC_SPEED_NOMINAL).c_str(),
+    String(speed_nominal_percent).c_str()
+  );
+}
+
+void drawSpeedNominal(int speed_nominal_percent) {
 
   // calculate pixel values:
   int scaling_factor;
@@ -214,18 +232,12 @@ void drawSpeedometer(int speed_actual_percent, int speed_nominal_percent) {
     limiter_percent = SPEED_NOMINAL_MAX;
     limiter_direction = "FWD";
   }
-  uint8_t speed_actual_width = (int)(128.0 * ((float)abs(speed_actual_percent) / scaling_factor));
   uint8_t speed_nominal_pos = (int)(128.0 * ((float)abs(speed_nominal_percent) / scaling_factor));
 
   uint8_t limiter_pos = 0;
   if (direction_nominal == limiter_direction) {
     limiter_pos = (int)(128.0 * ((float)abs(limiter_percent) / scaling_factor));
   }
-
-  Serial.println(speed_nominal_pos);
-
-  // actual speed as bar on top of display:
-  u8g2.drawBox(0, 0, speed_actual_width, 16);
 
   // limiter:
   if (limiter_direction == direction_nominal) {
@@ -265,24 +277,36 @@ void drawSpeedometer(int speed_actual_percent, int speed_nominal_percent) {
 
 }
 
-void setSpeed(int speed_nominal_percent, int speed_actual_percent) {
+void drawSpeedActual(int speed_actual_percent) {
 
-  // update display:
+  // calculate pixel values:
+  int scaling_factor;
+  if (SPEED_NOMINAL_MAX > abs(SPEED_NOMINAL_MIN)) {
+    scaling_factor = SPEED_NOMINAL_MAX;
+  } else {
+    scaling_factor = abs(SPEED_NOMINAL_MIN);
+  }
+  uint8_t speed_actual_width = (int)(128.0 * ((float)abs(speed_actual_percent) / scaling_factor));
+
+  // actual speed as bar on top of display:
+  u8g2.drawBox(0, 0, speed_actual_width, 16);
+}
+
+/**
+ * This function is intended to draw the contents
+ * of the display once every loop.
+ * 
+ * It has no input parameters as it takes the required
+ * data from global variables.
+ */
+void drawDisplay() {
+
   u8g2.clearBuffer();
-  drawSpeedometer(speed_actual_percent, speed_nominal_percent);
+
+  drawSpeedNominal(speed_nominal);
+  drawSpeedActual(speed_actual);
+
   u8g2.sendBuffer();
-
-  // send direction:
-  mqttSendMessage(
-    String(MQTT_TOPIC_DIRECTION_NOMINAL).c_str(),
-    direction_nominal
-  );
-
-  // send speed:
-  mqttSendMessage(
-    String(MQTT_TOPIC_SPEED_NOMINAL).c_str(),
-    String(speed_nominal_percent).c_str()
-  );
 }
 
 void setup() {
@@ -310,23 +334,83 @@ void setup() {
     Serial.println("Could not connect to MQTT broker");
   }
 
-  // DEBUG:
-  randomSeed(analogRead(A0));
+  mqttClient.subscribe(String(MQTT_TOPIC_SPEED_ACTUAL).c_str());
+  Serial.print("Subscribed to topic '");
+  Serial.print(MQTT_TOPIC_SPEED_ACTUAL);
+  Serial.println("'.");
+
+  mqttClient.subscribe(String(MQTT_TOPIC_DIRECTION_ACTUAL).c_str());
+  Serial.print("Subscribed to topic '");
+  Serial.print(MQTT_TOPIC_DIRECTION_ACTUAL);
+  Serial.println("'.");
 
   // update display:
-  u8g2.clearBuffer();
-  drawSpeedometer(speed_actual, speed_nominal);
-  u8g2.sendBuffer();
+  drawDisplay();
   
   
 }
 
 void loop() {
 
+  // -- read mqtt messages
+
+  mqttClient.loop();
+  if (mqtt_message_was_received) {
+
+    // DEBUG:
+    Serial.print("loop(): message ");
+    Serial.print(mqtt_received_message);
+    Serial.print(" received on topic ");
+    Serial.println(mqtt_received_topic);
+
+    // read actual direction:
+    if (strcmp(mqtt_received_topic, MQTT_TOPIC_DIRECTION_ACTUAL) == 0) {
+      Serial.println("> direction_actual"); // DEBUG
+      if (strcmp(mqtt_received_message, "FWD") == 0) {
+        direction_actual = "FWD";
+      } else if (strcmp(mqtt_received_message, "REV") == 0) {
+        direction_actual = "REV";
+      } else {
+        Serial.println("ERROR: unexpected message received!");
+        Serial.print("    topic:  ");
+        Serial.println(mqtt_received_topic);
+        Serial.print("    message: ");
+        Serial.println(mqtt_received_message);
+      }
+    }
+
+    // read actual speed:
+    if (strcmp(mqtt_received_topic, MQTT_TOPIC_SPEED_ACTUAL) == 0) {
+      Serial.println("> speed_actual"); // DEBUG
+      if (
+        String(mqtt_received_message).toInt() <= SPEED_NOMINAL_MAX &&
+        String(mqtt_received_message).toInt() >= SPEED_NOMINAL_MIN
+      ) {
+        speed_actual = String(mqtt_received_message).toInt();
+        
+        // DEBUG:
+        Serial.print("  > stored speed_actual: ");
+        Serial.println(speed_actual);
+      } else {
+        Serial.println("ERROR: received value for 'speed_nominal' out of range!");
+        Serial.print("    value: ");
+        Serial.println(String(mqtt_received_message).toInt());
+      }
+
+      // update display:
+      drawSpeedActual(speed_actual);
+    }
+
+    mqtt_message_was_received = false;
+  }
+
+
+  // -- read inputs
+
   if (digitalRead(PIN_BUTTON_DOWN) == HIGH) {
 
     // DEBUG:
-    speed_actual = random(0, 100);
+    // speed_actual = random(0, 100);
 
     // change direction if speed is zero:
     if (speed_nominal == 0) {
@@ -356,7 +440,7 @@ void loop() {
     }
 
     // update display and send speed via mqtt:
-    setSpeed(speed_nominal, speed_actual);
+    sendSpeedNominal(speed_nominal);
 
     // wait for falling edge:
     while (digitalRead(PIN_BUTTON_DOWN) == HIGH) {
@@ -367,9 +451,6 @@ void loop() {
   
   // read buttons:
   if (digitalRead(PIN_BUTTON_UP) == HIGH) {
-
-    // DEBUG:
-    speed_actual = random(0, 100);
 
     // change speed in forward mode:
     if (direction_nominal == "FWD") {
@@ -390,7 +471,7 @@ void loop() {
     }
 
     // update display and send speed via mqtt:
-    setSpeed(speed_nominal, speed_actual);
+    sendSpeedNominal(speed_nominal);
 
     // wait for falling edge:
     while (digitalRead(PIN_BUTTON_UP) == HIGH) {
@@ -398,6 +479,14 @@ void loop() {
     }
 
   }
+
+
+  // -- update display
+
+  drawDisplay();
+
+
+  // -- delay next loop
 
   delay(10);
   
