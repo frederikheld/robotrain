@@ -93,13 +93,13 @@ Each click of a button will send a message for _nominal speed_ and _nominal dire
     <tbody>
         <tr>
             <td>1</td>
-            <td>caret</td>
-            <td>Indicates the currently selected nominal speed sent to the train</td>
+            <td>nominal speed caret</td>
+            <td>Indicates the currently selected nominal speed sent to the train. If the caret overlaps the actual speed bar or limiter indicator, it will be displayed with inverse colors.</td>
         </tr>
         <tr>
             <td>2</td>
-            <td>limiter</td>
-            <td>If SPEED_NOMINAL_MAX != abs(SPEED_NOMINAL_MIN), the limiter indicates the reduced maximal allowed speed</td>
+            <td>limiter indicator</td>
+            <td>If SPEED_NOMINAL_MAX != abs(SPEED_NOMINAL_MIN), the limiter indicates the reduced maximum speed.</td>
         </tr>
         <tr>
             <td>3</td>
@@ -108,8 +108,8 @@ Each click of a button will send a message for _nominal speed_ and _nominal dire
         </tr>
         <tr>
             <td>4</td>
-            <td>actual speed</td>
-            <td>Indicates the actual speed received from the train</td>
+            <td>actual speed bar</td>
+            <td>Indicates the actual speed received from the train.</td>
         </tr>
     </tbody>
 </table>
