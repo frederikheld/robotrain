@@ -10,7 +10,7 @@ A simple remote control for _robotrain_ with a little display and two buttons. I
 
 ![Wiring diagram of remote-control](remote-control_bb.png)
 
-This is an export from the [Fritzing file](remote-contorl.fzz) in this directory.
+This is an export from the [Fritzing file](remote-control.fzz) in this directory.
 
 ### Note on the OLED display
 
