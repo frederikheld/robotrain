@@ -2,9 +2,7 @@
 
 A simple remote control for _robotrain_ with a little display and two buttons. It can be used to send speed and direction commands to [_motor-control_](../motor-control). It also displays the actual speed of the train.
 
-
 ![Picture of remote-control on a breadboard](remote-control_picture.jpg)
-
 
 ## Setup your hardware
 
@@ -39,7 +37,7 @@ You need to configure your WiFi (ssid and secret) as well as MQTT broker (server
 
 > Note that you have to provide your WiFi secret in plaintext. This is a security risk as Arduino programs can be downloaded from the board. Therefore I recommend to use a separate WiFi for your _robotrain_ setup.
 
-The dealys and timeouts for WiFi and MQTT usually don't need to be changed. If your infrastructure is particularily slow or instable, changing the values might help to fix issues.
+The delays and timeouts for WiFi and MQTT usually don't need to be changed. If your infrastructure is particularily slow or instable, changing the values might help to fix issues.
 
 If you use a different wiring, you can configure it in the pinning section.
 
@@ -66,4 +64,52 @@ Then select _NodeMCU 1.0 (ESP-12E Module)_ in the _Tools_ menu and upload the sk
 
 ## Usage
 
-// tbd
+### Control the train
+
+This remote control can send _nominal_ values to the remote control and display _actual_ values received from the train.
+
+#### Buttons
+
+You can increase the nominal speed in steps with the right button up to the max value. If max value is reached, clicking the button will not increase the speed further.
+
+You can decrease the nominal speed in steps with the left button down to 0. If 0 is reached, clicking the down button again will change the _nominal_ direction of the train.
+
+Step width as well as min and max speed values can be configured in _config.h_. You should interpret SPEED_NOMINAL_MAX as "max speed in forward direction" and SPEED_NOMINAL_MIN as "max speed in reverse direction". As the scale is intended to represent precentage, _MAX_ value should be 100, _MIN_ value -100. If your train can't run the same speed in both directions, you can change one of the values accordingly. It is possible to use values above/below 100/-100, but the recommendation is to stick with 100/-100 for the direction the train can run faster.
+
+Each click of a button will send a message for _nominal speed_ and _nominal direction_ each to the MQTT broker.
+
+#### Display
+
+![Annotated picture of the displayed information](remote-control_display-annotated.jpg)
+
+<table>
+    <thead>
+        <tr>
+            <th>no.</th>
+            <th>name</th>
+            <th>descripton</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>1</td>
+            <td>caret</td>
+            <td>Indicates the currently selected nominal speed sent to the train</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>limiter</td>
+            <td>If SPEED_NOMINAL_MAX != abs(SPEED_NOMINAL_MIN), the limiter indicates the reduced maximal allowed speed</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>textual representation</td>
+            <td>This line indicates the currently selected nominal values in textual form. "REV" or "FWD" indicate the current direction followed by the numbers for current and maximum nominal speed.</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>actual speed</td>
+            <td>Indicates the actual speed received from the train</td>
+        </tr>
+    </tbody>
+</table>
