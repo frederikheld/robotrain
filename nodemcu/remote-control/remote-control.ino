@@ -143,7 +143,7 @@ bool mqttSendMessage(const char* topic, const char* message) {
   Serial.print(message);
   Serial.print("' on topic '");
   Serial.print(topic);
-  Serial.print("'.");
+  Serial.println("'.");
   
   mqttClient.publish(topic, message, true);
 
@@ -312,7 +312,7 @@ void drawDisplay() {
 void setup() {
   
   // start serial:
-  Serial.begin(9600);
+  Serial.begin(115200);
   
   // init buttons:
   pinMode(PIN_BUTTON_UP, INPUT);
@@ -357,15 +357,8 @@ void loop() {
   mqttClient.loop();
   if (mqtt_message_was_received) {
 
-    // DEBUG:
-    Serial.print("loop(): message ");
-    Serial.print(mqtt_received_message);
-    Serial.print(" received on topic ");
-    Serial.println(mqtt_received_topic);
-
     // read actual direction:
     if (strcmp(mqtt_received_topic, MQTT_TOPIC_DIRECTION_ACTUAL) == 0) {
-      Serial.println("> direction_actual"); // DEBUG
       if (strcmp(mqtt_received_message, "FWD") == 0) {
         direction_actual = "FWD";
       } else if (strcmp(mqtt_received_message, "REV") == 0) {
@@ -381,16 +374,11 @@ void loop() {
 
     // read actual speed:
     if (strcmp(mqtt_received_topic, MQTT_TOPIC_SPEED_ACTUAL) == 0) {
-      Serial.println("> speed_actual"); // DEBUG
       if (
         String(mqtt_received_message).toInt() <= SPEED_NOMINAL_MAX &&
         String(mqtt_received_message).toInt() >= SPEED_NOMINAL_MIN
       ) {
         speed_actual = String(mqtt_received_message).toInt();
-        
-        // DEBUG:
-        Serial.print("  > stored speed_actual: ");
-        Serial.println(speed_actual);
       } else {
         Serial.println("ERROR: received value for 'speed_nominal' out of range!");
         Serial.print("    value: ");
@@ -408,9 +396,6 @@ void loop() {
   // -- read inputs
 
   if (digitalRead(PIN_BUTTON_DOWN) == HIGH) {
-
-    // DEBUG:
-    // speed_actual = random(0, 100);
 
     // change direction if speed is zero:
     if (speed_nominal == 0) {
@@ -475,7 +460,7 @@ void loop() {
 
     // wait for falling edge:
     while (digitalRead(PIN_BUTTON_UP) == HIGH) {
-      delay(100);
+      delay(10);
     }
 
   }
