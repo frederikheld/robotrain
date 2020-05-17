@@ -146,43 +146,6 @@ bool mqttSendMessage(const char* topic, const char* message) {
   Serial.println("'.");
   
   mqttClient.publish(topic, message, true);
-
-/*
-  // wait until message was rebounced:
-  // Note: This is not an implement of QoS 1 (which this library is lacking)
-  //       as there will be no attempt to send the message again if it failed.
-  //       This behavior could be added though.
-  //       Right now it just makes sure that the message is fully sent before
-  //       the board enters deep sleep mode. By waiting for the message to be
-  //       delivered back to this device we can make sure that it was delivered
-  //       to the broker.
-  
-  int receive_retry_delay = MQTT_SEND_REBOUNCE_DELAY;
-  int receive_retry_timeout = MQTT_SEND_REBOUNCE_TIMEOUT;
-  
-  while (!mqtt_message_was_received && receive_retry_timeout > 0) {
-    Serial.print(".");
-    mqttClient.loop();
-
-    // reset mqtt_message_was_received if wrong message was received:
-    if (mqtt_message_was_received && !strcmp(mqtt_received_message, message) == 0) {
-      mqtt_message_was_received = false;
-    }
-
-    // prepare next loop:
-    receive_retry_timeout -= receive_retry_delay;
-    delay(receive_retry_delay);
-  }
-
-  if (receive_retry_timeout <= 0) {
-    Serial.println(" Timed out.");
-    return false;
-  }
-
-  Serial.println(" Delivered.");
-  return true;
-
-*/
   
 }
 
