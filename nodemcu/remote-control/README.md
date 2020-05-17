@@ -16,9 +16,9 @@ This is an export from the [Fritzing file](remote-contorl.fzz) in this directory
 
 ### Note on the OLED display
 
-128x64 px OLED displays come in many different configurations which all look very similar or the same. Your display will most likely not work on the first try!
+128x64 px OLED displays come in many different configurations which all look very similar or even the same. Your display will most likely not work on the first try!
 
-This Sketch uses the library [_U8g2_ library by _oliver_](https://github.com/olikraus/u8g2), because it supporty a wide variety of configurations of this display.
+This Sketch uses the library [_U8g2_ library by _oliver_](https://github.com/olikraus/u8g2) because it supporty a wide variety of configurations of this display.
 
 To learn more about your display, it recommend to [watch this video](https://www.youtube.com/watch?v=0ZNhzXrhBVA).
 
@@ -37,6 +37,8 @@ This directory contains a file named `config.template.h`. Please create a copy o
 
 You need to configure your WiFi (ssid and secret) as well as MQTT broker (server and port) in `config.h`.
 
+> Note that you have to provide your WiFi secret in plaintext. This is a security risk as Arduino programs can be downloaded from the board. Therefore I recommend to use a separate WiFi for your _robotrain_ setup.
+
 The dealys and timeouts for WiFi and MQTT usually don't need to be changed. If your infrastructure is particularily slow or instable, changing the values might help to fix issues.
 
 If you use a different wiring, you can configure it in the pinning section.
@@ -49,7 +51,7 @@ This sketch uses the following standard libraries that come with the Arduino IDE
 
 * [_WiFi_](https://www.arduino.cc/en/Reference/WiFi) (1.2.7)
 
-It also uses the following libraries that can be installed via the Library Manager:
+It also uses the following additional libraries that can be installed via _Tools > Manage Libraries..._:
 
 * [_PubSubClient_ by _Nick O'Leary_](https://pubsubclient.knolleary.net/) (2.7.0)
 * [_U8g2_ library by _oliver_](https://github.com/olikraus/u8g2) (2.27.6)
@@ -58,11 +60,9 @@ The version used and tested with this sketch is indicated in round brackets.
 
 ### Upload the Sketch
 
-Select _NodeMCU 1.0 (ESP-12E Module)_ in the _Tools_ menu. 
+If you haven't used _NodeMCU_ boards before, you need to install it via _Tools > Board Manager_ first. The package name is [_esp8266_ by _ESP8266 Community_](https://github.com/esp8266/Arduino).
 
-This board is not available in a fresh installation of Arduino IDE! If you haven't worked with NodeMCU before, you have to install the board via the _Board Manager_. The package name is [_esp8266_ by _ESP8266 Community_](https://github.com/esp8266/Arduino).
-
-Now you can upload the sketch to your board.
+Then select _NodeMCU 1.0 (ESP-12E Module)_ in the _Tools_ menu and upload the sketch to your board.
 
 ## Usage
 
