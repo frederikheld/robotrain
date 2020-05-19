@@ -2,7 +2,7 @@
 
 ## NodeMCU/MQTT version
 
-// tbd
+This is work in progress. Please see the [nodemcu](./nodemcu) directory for more information.
 
 
 ## RasPi/JohnnyFive version (legacy)
