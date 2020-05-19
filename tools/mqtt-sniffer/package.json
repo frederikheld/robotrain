@@ -1,0 +1,14 @@
+{
+  "name": "mqtt-sniffer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "mqtt-sniffer.js",
+  "scripts": {
+    "start": "node mqtt-sniffer.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "mqtt": "^3.0.0"
+  }
+}
