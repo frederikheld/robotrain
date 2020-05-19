@@ -1,0 +1,5 @@
+{
+    "server": "robotrain",
+    "port": "1883",
+    "topic": "robotrain/#"
+}
