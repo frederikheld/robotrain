@@ -4,6 +4,8 @@ Remote controllable LEGO train.
 
 The train's heart is a RasPi that is connected to a local network via WiFi. This RasPi is equipped with a motor shield which is controlled via wiring-pi, a package with node bindings for WiringPi. It is also running a socket.io server that provides a web ui that can be accessed from all devices that are in the same network.
 
+> ATTENTION! This part of the repository is not being maintained anymore and just being kept for historic reasons. The NodeJS dependencies are outdated and contain security vulnerabilities! Use at your own risk!
+
 ## Installation
 
 Copy the whole folder to /home/pi/robotrain on your RasPi, then run
