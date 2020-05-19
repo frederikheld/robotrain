@@ -4,13 +4,11 @@ Motor control allows to command the _robotrain_ via Wifi. Command are sent and r
 
 ![Wiring diagram of motor-control](motor-control_bb.png)
 
-This is an export from the [Fritzing file](motor-control.fzz) in this directory.
-
-The black wires are ground (GND). The other wires are explained n the sections below.
+This is an export from the [Fritzing file](motor-control.fzz) in this directory. The black wires are ground (GND). The other wires are explained in the sections below.
 
 The motor control has several features that are described in detail below.
 
-## 12 V propulsion supply system
+## 12 V drive supply system
 
 The original LEGOⓇ train system is powered by 0..9 V direct current that is put on the tracks and collected by the wheels of the drive units. The collectors and motor are directly connected, so the voltage on the tracks directly determines how fast the train is running.
 
@@ -34,7 +32,7 @@ A) It compensates for possible voltage drops if a section has reduced conductivi
 
 B) It allows to run the train on tracks that are not powered at all. This helps to reduce cost for the whole layout, as the original powered tracks are not sold anymore and prices on eBay are high. But it is possible to combine powered tracks with the cheaper non-powered tracks that were introduced by LEGOⓇ together with the battery powered train system. They have exactly the same structural shape and can be used interchangeably.
 
-I'm using [revolt Mini-USV, unterbrechungsfreie DC-Stromversorgung, 12 V, 22 W, 2000 mAh](https://www.revolt-power.de/Mini-UPS-fuer-Router-PX-1931-919.shtml) UPS. It fits into [LEGOⓇ 4547 Club Car](https://www.bricklink.com/v2/catalog/catalogitem.page?S=4547-1&name=Club%20Car&category=%5BTrain%5D%5B9V%5D#T=S&O={%22iconly%22:0}) if the interior is removed. To connect the wiring I'm using [Delock Adapter DC 5,5 x 2,5 mm Stecker > Terminalblock 2 Pin](https://www.delock.de/produkt/65487/merkmale.html) connectors.
+I'm using [revolt Mini-USV, unterbrechungsfreie DC-Stromversorgung, 12 V, 22 W, 2000 mAh](https://www.revolt-power.de/Mini-UPS-fuer-Router-PX-1931-919.shtml) UPS. It fits into [LEGOⓇ 4547 Club Car](https://www.bricklink.com/v2/catalog/catalogitem.page?S=4547-1&name=Club%20Car&category=%5BTrain%5D%5B9V%5D#T=S&O={%22iconly%22:0}) if the interior is removed. To connect the wiring, I'm using [Delock Adapter DC 5,5 x 2,5 mm Stecker > Terminalblock 2 Pin](https://www.delock.de/produkt/65487/merkmale.html) connectors.
 
 ### Wiring
 
@@ -42,7 +40,7 @@ The rectified 12 V direct current system is indicated by the yellow and black wi
 
 The un-rectified 12 V direct current sections are indicated by the brown wires in the diagram.
 
-If now UPS is used, the yellow and black wires can be connected with their counterpart of the same color.
+If no UPS is used, the yellow and black wires can be connected with their counterpart of the same color.
 
 ## 5 V logic supply system
 
@@ -64,3 +62,8 @@ The motor control takes 12 V propulsion power and 5 V logic power. It is also co
 
 Each output is connected to the pair of input cables of the respective drive unit.
 
+### Configure and upload the Sketch
+
+There's a [detailed description on how to configure and download the sketch to the _NodeMCU_](../remote-control/README.md) in the _remote-control_ directory. The sketch for _motor-control_ follows exactly the same configuration pattern and can be downloaded with the same settings to the _NodeMCU_ that is located in the train.
+
+The only difference is that you don't need to install the [U8g2 library by oliver](https://github.com/olikraus/u8g2) as the train has no OLED display.
