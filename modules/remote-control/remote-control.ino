@@ -44,15 +44,19 @@ bool wifiConnect(const char* ssid, const char* password, const int wifi_connect_
   int retry_delay = wifi_connect_retry_delay;
   int retry_timeout = wifi_connect_retry_timeout;
   
-  Serial.println();
-  Serial.print("Attempting to connect to WiFi ");
-  Serial.print(ssid);
-  Serial.print(".");
+  if (LOG_TO_SERIAL) {
+    Serial.println();
+    Serial.print("Attempting to connect to WiFi ");
+    Serial.print(ssid);
+    Serial.print(".");
+  }
 
   WiFi.begin(ssid, password);
 
   while (WiFi.status() != WL_CONNECTED && retry_timeout > 0) {
-    Serial.print(".");
+    if (LOG_TO_SERIAL) {
+      Serial.print(".");
+    }
 
     // prepare next loop:
     retry_timeout -= retry_delay;
@@ -60,16 +64,20 @@ bool wifiConnect(const char* ssid, const char* password, const int wifi_connect_
   }
 
   if (retry_timeout <= 0) {
-
-    Serial.println(" Timed out.");
+    if (LOG_TO_SERIAL) {
+      Serial.println(" Timed out.");
+    }
     return false;
 
   }
   
-  Serial.println(" Connected.");
-  Serial.print("  Assigned IP is ");
-  Serial.print(WiFi.localIP());
-  Serial.println(".");
+  if (LOG_TO_SERIAL) {
+    Serial.println(" Connected.");
+    Serial.print("  Assigned IP is ");
+    Serial.print(WiFi.localIP());
+    Serial.println(".");
+  }
+
   return true;
   
 }
@@ -79,11 +87,13 @@ bool mqttConnect(const char* device_id, PubSubClient mqttClient, const char* mqt
   int retry_delay = mqtt_connect_retry_delay;
   int retry_timeout = mqtt_connect_retry_timeout;
   
-  Serial.print("Attempting to connect to MQTT broker at ");
-  Serial.print(mqtt_server);
-  Serial.print(":");
-  Serial.print(mqtt_port);
-  Serial.print(".");
+  if (LOG_TO_SERIAL) {
+    Serial.print("Attempting to connect to MQTT broker at ");
+    Serial.print(mqtt_server);
+    Serial.print(":");
+    Serial.print(mqtt_port);
+    Serial.print(".");
+  }
       
   // create a mqtt client id out of the device_id:
   String mqttClientId = "robotrain-";
@@ -95,7 +105,9 @@ bool mqttConnect(const char* device_id, PubSubClient mqttClient, const char* mqt
     if (mqttClient.connect(mqttClientId.c_str())) {
       break;
     } else {
-      Serial.print(".");
+      if (LOG_TO_SERIAL) {
+        Serial.print(".");
+      }
       
       // prepare next loop:
       retry_timeout -= (retry_delay + 1000); // see [1] below
@@ -109,18 +121,22 @@ bool mqttConnect(const char* device_id, PubSubClient mqttClient, const char* mqt
 
   if (retry_timeout <= 0) {
     
-    Serial.print(" Timed out. Error code ");
-    Serial.println(mqttClient.state());
+    if (LOG_TO_SERIAL) {
+      Serial.print(" Timed out. Error code ");
+      Serial.println(mqttClient.state());
+    }
     
     return false;
     
   }
-    
-  Serial.println(" Connected.");
-    
-  Serial.print("  Client ID is ");
-  Serial.print(mqttClientId);
-  Serial.println(".");
+  
+  if (LOG_TO_SERIAL) {
+    Serial.println(" Connected.");
+      
+    Serial.print("  Client ID is ");
+    Serial.print(mqttClientId);
+    Serial.println(".");
+  }
 
   return true;
   
@@ -139,11 +155,13 @@ bool mqttSendMessage(const char* topic, const char* message) {
   mqttClient.subscribe(topic);
 
   // publish message on given topic:
-  Serial.print("Publishing message '");
-  Serial.print(message);
-  Serial.print("' on topic '");
-  Serial.print(topic);
-  Serial.println("'.");
+  if (LOG_TO_SERIAL) {
+    Serial.print("Publishing message '");
+    Serial.print(message);
+    Serial.print("' on topic '");
+    Serial.print(topic);
+    Serial.println("'.");
+  }
   
   mqttClient.publish(topic, message, true);
   
@@ -286,7 +304,9 @@ void setup() {
 
   // connect to wifi:
   if (!wifiConnect(WIFI_SSID, WIFI_SECRET, WIFI_CONNECT_RETRY_DELAY, WIFI_CONNECT_RETRY_TIMEOUT)) {
-    Serial.println("Could not connect to WiFi!");
+    if (LOG_TO_SERIAL) {
+      Serial.println("Could not connect to WiFi!");
+    }
   }
 
   // connect to mqtt broker:
@@ -294,18 +314,24 @@ void setup() {
   mqttClient.setCallback(mqttMessageReceivedCallback);
 
   if(!mqttConnect(DEVICE_ID, mqttClient, MQTT_SERVER, MQTT_PORT, MQTT_CONNECT_RETRY_DELAY, MQTT_CONNECT_RETRY_TIMEOUT)) {
-    Serial.println("Could not connect to MQTT broker");
+    if (LOG_TO_SERIAL) {
+      Serial.println("Could not connect to MQTT broker");
+    }
   }
 
   mqttClient.subscribe(String(MQTT_TOPIC_SPEED_ACTUAL).c_str());
-  Serial.print("Subscribed to topic '");
-  Serial.print(MQTT_TOPIC_SPEED_ACTUAL);
-  Serial.println("'.");
+  if (LOG_TO_SERIAL) {
+    Serial.print("Subscribed to topic '");
+    Serial.print(MQTT_TOPIC_SPEED_ACTUAL);
+    Serial.println("'.");
+  }
 
-  mqttClient.subscribe(String(MQTT_TOPIC_DIRECTION_ACTUAL).c_str());
-  Serial.print("Subscribed to topic '");
-  Serial.print(MQTT_TOPIC_DIRECTION_ACTUAL);
-  Serial.println("'.");
+  if (LOG_TO_SERIAL) {
+    mqttClient.subscribe(String(MQTT_TOPIC_DIRECTION_ACTUAL).c_str());
+    Serial.print("Subscribed to topic '");
+    Serial.print(MQTT_TOPIC_DIRECTION_ACTUAL);
+    Serial.println("'.");
+  }
 
   // update display:
   drawDisplay();
@@ -327,11 +353,13 @@ void loop() {
       } else if (strcmp(mqtt_received_message, "REV") == 0) {
         direction_actual = "REV";
       } else {
-        Serial.println("ERROR: unexpected message received!");
-        Serial.print("    topic:  ");
-        Serial.println(mqtt_received_topic);
-        Serial.print("    message: ");
-        Serial.println(mqtt_received_message);
+        if (LOG_TO_SERIAL) {
+          Serial.println("ERROR: unexpected message received!");
+          Serial.print("    topic:  ");
+          Serial.println(mqtt_received_topic);
+          Serial.print("    message: ");
+          Serial.println(mqtt_received_message);
+        }
       }
     }
 
@@ -343,9 +371,11 @@ void loop() {
       ) {
         speed_actual = String(mqtt_received_message).toInt();
       } else {
-        Serial.println("ERROR: received value for 'speed_nominal' out of range!");
-        Serial.print("    value: ");
-        Serial.println(String(mqtt_received_message).toInt());
+        if (LOG_TO_SERIAL) {
+          Serial.println("ERROR: received value for 'speed_nominal' out of range!");
+          Serial.print("    value: ");
+          Serial.println(String(mqtt_received_message).toInt());
+        }
       }
 
       // update display:
