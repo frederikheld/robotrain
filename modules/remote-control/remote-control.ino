@@ -326,8 +326,8 @@ void setup() {
     Serial.println("'.");
   }
 
+  mqttClient.subscribe(String(MQTT_TOPIC_DIRECTION_ACTUAL).c_str());
   if (LOG_TO_SERIAL) {
-    mqttClient.subscribe(String(MQTT_TOPIC_DIRECTION_ACTUAL).c_str());
     Serial.print("Subscribed to topic '");
     Serial.print(MQTT_TOPIC_DIRECTION_ACTUAL);
     Serial.println("'.");
