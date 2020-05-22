@@ -41,3 +41,8 @@
 #define SPEED_NOMINAL_MAX 100 // max value of "speed nominal"
 #define SPEED_NOMINAL_MIN -100 // min value of "speed nominal"
 #define SPEED_NOMINAL_STEP 10 // steps to increase/decrease "speed nominal" with each click of a button
+
+
+// -- DEVELOPMENT
+
+#define LOG_TO_SERIAL false // set to boolean true if you want to read debug output via serial. false makes the remote more responsive!
