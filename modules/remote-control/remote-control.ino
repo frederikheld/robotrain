@@ -150,10 +150,6 @@ bool mqttSendMessage(const char* topic, const char* message) {
     // bool mqttConnect(const char* device_id, PubSubClient mqttClient, const char* mqtt_server, const int mqtt_port, const int mqtt_connect_retry_delay = 500, const int mqtt_connect_retry_timeout = 10000) {
   }
 
-  // subscibe to outgoing topic to be able
-  // to check if message was delivered:
-  mqttClient.subscribe(topic);
-
   // publish message on given topic:
   if (LOG_TO_SERIAL) {
     Serial.print("Publishing message '");
@@ -319,14 +315,14 @@ void setup() {
     }
   }
 
-  mqttClient.subscribe(String(MQTT_TOPIC_SPEED_ACTUAL).c_str());
+  mqttClient.subscribe(String(MQTT_TOPIC_SPEED_ACTUAL).c_str(), 0);
   if (LOG_TO_SERIAL) {
     Serial.print("Subscribed to topic '");
     Serial.print(MQTT_TOPIC_SPEED_ACTUAL);
     Serial.println("'.");
   }
 
-  mqttClient.subscribe(String(MQTT_TOPIC_DIRECTION_ACTUAL).c_str());
+  mqttClient.subscribe(String(MQTT_TOPIC_DIRECTION_ACTUAL).c_str(), 0);
   if (LOG_TO_SERIAL) {
     Serial.print("Subscribed to topic '");
     Serial.print(MQTT_TOPIC_DIRECTION_ACTUAL);
@@ -335,7 +331,6 @@ void setup() {
 
   // update display:
   drawDisplay();
-  
   
 }
 
