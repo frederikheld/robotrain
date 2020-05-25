@@ -2,6 +2,7 @@
 0 !LEOCAD MODEL AUTHOR Frederik S. Held
 0 !LEOCAD MODEL DESCRIPTION Full Robotrain
 0 !LEOCAD MODEL COMMENT All submodels of the train integrated
+1 8 0 -8 0 1 0 0 0 1 0 0 0 1 53401.dat
 0 NOFILE
 0 FILE jacobs_bogie.ldr
 0 !LEOCAD MODEL AUTHOR Frederik S. Held
@@ -157,12 +158,12 @@
 0 NOFILE
 0 FILE car_1.ldr
 0 !LEOCAD MODEL AUTHOR Frederik S. Held
-1 16 -80.0003 -7 29.25 1 0 0 0 1 0 0 0 1 car_1_body.ldr
-1 16 -80 -23 320 1 0 0 0 1 0 0 0 1 gangway_connection.ldr
-1 16 -80 -151 310 1 0 0 0 1 0 0 0 1 gangway_keystones_slim.ldr
+1 16 -0.0002 0 0 1 0 0 0 1 0 0 0 1 car_1_body.ldr
+1 16 0.0001 -16 290.75 1 0 0 0 1 0 0 0 1 gangway_connection.ldr
+1 16 0.0001 -144 280.75 1 0 0 0 1 0 0 0 1 gangway_keystones_slim.ldr
 0 STEP
-1 16 -80 -151 50.0006 1 0 0 0 1 0 0 0 1 car_1_roof.ldr
-1 16 -80.0001 33 109.9997 1 0 0 0 1 0 0 0 1 head_car_underfloor_compartment.ldr
+1 16 0.0001 -144 20.7506 1 0 0 0 1 0 0 0 1 car_1_roof.ldr
+1 16 0 40 80.7497 1 0 0 0 1 0 0 0 1 head_car_underfloor_compartment.ldr
 0 NOFILE
 0 FILE car_1_body.ldr
 0 !LEOCAD MODEL AUTHOR Frederik S. Held 
@@ -272,16 +273,16 @@
 0 NOFILE
 0 FILE car_2.ldr
 0 !LEOCAD MODEL AUTHOR Frederik S. Held
-1 16 40.0003 4 -120.0002 1 0 0 0 1 0 0 0 1 car_2_body.ldr
-1 16 40 -11 -140 1 0 0 0 1 0 0 0 1 car_2_ups_mount.ldr
-1 16 40 -188 129.9996 1 0 0 0 1 0 0 0 1 car_2_rooflet_with_panorama_support.ldr
-1 16 40.0001 -188 -370.0004 -1 0 0 0 1 0 0 0 -1 car_2_rooflet_with_panorama_support.ldr
-1 0 40.0003 -60 209.9998 1 0 0 0 1 0 0 0 1 gangway_connection.ldr
-1 0 40.0003 -60 -450.0002 -1 0 0 0 1 0 0 0 -1 gangway_connection.ldr
-1 16 40.0003 -188 209.9998 1 0 0 0 1 0 0 0 1 gangway_keystones.ldr
-1 16 40.0002 -188 -450.0002 -1 0 0 0 1 0 0 0 -1 gangway_keystones.ldr
-1 16 10.5003 -140 -120.0002 1 0 0 0 1 0 0 0 1 car_2_panorama_wing.ldr
-1 16 69.5003 -140 -120.0002 -1 0 0 0 1 0 -0 0 -1 car_2_panorama_wing.ldr
+1 16 0 49 0 1 0 0 0 1 0 0 0 1 car_2_body.ldr
+1 16 -0.0003 34 -19.9998 1 0 0 0 1 0 0 0 1 car_2_ups_mount.ldr
+1 16 -0.0003 -143 249.9998 1 0 0 0 1 0 0 0 1 car_2_rooflet_with_panorama_support.ldr
+1 16 -0.0002 -143 -250.0002 -1 0 0 0 1 0 0 0 -1 car_2_rooflet_with_panorama_support.ldr
+1 0 0 -15 330 1 0 0 0 1 0 0 0 1 gangway_connection.ldr
+1 0 0 -15 -330 -1 0 0 0 1 0 0 0 -1 gangway_connection.ldr
+1 16 0 -143 330 1 0 0 0 1 0 0 0 1 gangway_keystones.ldr
+1 16 -0.0001 -143 -330 -1 0 0 0 1 0 0 0 -1 gangway_keystones.ldr
+1 16 -29.5 -95 -0 1 0 0 0 1 0 0 0 1 car_2_panorama_wing.ldr
+1 16 29.5 -95 -0 -1 0 0 0 1 0 -0 0 -1 car_2_panorama_wing.ldr
 0 NOFILE
 0 FILE car_2_body.ldr
 0 !LEOCAD MODEL AUTHOR Frederik S. Held 
@@ -433,14 +434,14 @@
 0 NOFILE
 0 FILE car_3.ldr
 0 !LEOCAD MODEL AUTHOR Frederik S. Held
-1 16 80 0 19.9999 1 0 0 0 1 0 0 0 1 car_3_body.ldr
-1 0 80 -16 290 1 0 0 0 1 0 0 0 1 gangway_connection.ldr
-1 0 80 -16 -250 -1 0 0 0 1 0 0 0 -1 gangway_connection.ldr
-1 0 80 -144 -240 -1 0 0 0 1 0 0 0 -1 gangway_keystones_slim.ldr
-1 0 80 -144 280 -1 0 0 0 1 0 0 0 -1 gangway_keystones_slim.ldr
-1 16 60 -16 139.9999 1 0 0 0 1 0 0 0 1 car_3_interieur.ldr
-1 16 80 40 20 1 0 0 0 1 0 0 0 1 middle_car_underfloor_compartment.ldr
-1 16 80 -144 20.0012 1 0 0 0 1 0 0 0 1 car_3_roof.ldr
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 car_3_body.ldr
+1 0 0 -16 270.0001 1 0 0 0 1 0 0 0 1 gangway_connection.ldr
+1 0 0 -16 -269.9999 -1 0 0 0 1 0 0 0 -1 gangway_connection.ldr
+1 0 0 -144 -259.9999 -1 0 0 0 1 0 0 0 -1 gangway_keystones_slim.ldr
+1 0 0 -144 260.0001 -1 0 0 0 1 0 0 0 -1 gangway_keystones_slim.ldr
+1 16 -20 -16 120 1 0 0 0 1 0 0 0 1 car_3_interieur.ldr
+1 16 0 40 0.0001 1 0 0 0 1 0 0 0 1 middle_car_underfloor_compartment.ldr
+1 16 -0 -144 0.0013 1 0 0 0 1 0 0 0 1 car_3_roof.ldr
 0 NOFILE
 0 FILE car_3_body.ldr
 0 !LEOCAD MODEL AUTHOR Frederik S. Held 
@@ -555,15 +556,15 @@
 0 NOFILE
 0 FILE car_4.ldr
 0 !LEOCAD MODEL AUTHOR Frederik S. Held
-1 0 80 -16 290 1 0 0 0 1 0 0 0 1 gangway_connection.ldr
-1 0 80 -16 -250 -1 0 0 0 1 0 0 0 -1 gangway_connection.ldr
-1 0 80 -144 -240 -1 0 0 0 1 0 0 0 -1 gangway_keystones_slim.ldr
-1 0 80 -144 280 -1 0 0 0 1 0 0 0 -1 gangway_keystones_slim.ldr
-1 16 80 0 20 1 0 0 0 1 0 0 0 1 car_4_body.ldr
-1 16 109.9999 -24 180 1 0 0 0 1 0 0 0 1 high_voltage_unit.ldr
-1 16 100 -20 -20 -1 0 0 0 1 0 0 0 -1 car_4_interieur.ldr
-1 16 80 -136 20 1 0 0 0 1 0 0 0 1 car_4_roof.ldr
-1 16 80 40 20 1 0 0 0 1 0 0 0 1 middle_car_underflor_compartment_electric.ldr
+1 0 0 -16 270 1 0 0 0 1 0 0 0 1 gangway_connection.ldr
+1 0 0 -16 -270 -1 0 0 0 1 0 0 0 -1 gangway_connection.ldr
+1 0 0 -144 -260 -1 0 0 0 1 0 0 0 -1 gangway_keystones_slim.ldr
+1 0 0 -144 260 -1 0 0 0 1 0 0 0 -1 gangway_keystones_slim.ldr
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 car_4_body.ldr
+1 16 29.9999 -24 160 1 0 0 0 1 0 0 0 1 high_voltage_unit.ldr
+1 16 20 -20 -40 -1 0 0 0 1 0 0 0 -1 car_4_interieur.ldr
+1 16 0 -136 0 1 0 0 0 1 0 0 0 1 car_4_roof.ldr
+1 16 0 40 0 1 0 0 0 1 0 0 0 1 middle_car_underflor_compartment_electric.ldr
 0 NOFILE
 0 FILE car_4_body.ldr
 0 !LEOCAD MODEL AUTHOR Frederik S. Held
@@ -626,8 +627,8 @@
 1 7 -50 -112 190.0001 0 0 1 0 1 0 -1 0 0 3005.dat
 1 7 -50 -136 130.0001 0 0 1 0 1 0 -1 0 0 3005.dat
 1 7 -50 -136 190.0001 0 0 1 0 1 0 -1 0 0 3005.dat
-1 7 -50.0001 -136 160 -0 0 1 0 1 0 -1 0 -0 4035.dat
-1 47 -50.0001 -136 160 -0 0 1 0 1 0 -1 0 -0 4036.dat
+1 7 -50.0001 -136 160 0 0 1 0 1 0 -1 0 0 4035.dat
+1 47 -50.0001 -136 160 0 0 1 0 1 0 -1 0 0 4036.dat
 0 NOFILE
 0 FILE car_4_interieur.ldr
 0 !LEOCAD MODEL AUTHOR Frederik S. Held 
