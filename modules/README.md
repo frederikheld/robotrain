@@ -4,9 +4,9 @@ _Robotrain_ features are split into modules that each can be used independently.
 
 The common communication protocol between those modules is _MQTT_. Additional peer-to-peer connections on different protocols are possible, but the have to be announced and negotiated via _MQTT_.
 
-> You need to set up a _MQTT_ broker that serves as the central communication hub. _robotrain_ comes with an out-of-the-box broker tha you'll find in [common-infrastructure/mqtt-broker](../common-infrastructure/mqtt-broker).
+> You need to set up a _MQTT_ broker that serves as the central communication hub. _robotrain_ comes with an out-of-the-box broker that you'll find in [common-infrastructure/mqtt-broker](../common-infrastructure/mqtt-broker).
 >
->You also need to configure each module to use the broker. You'll find the respective config keys in each module's `config.template.*` file.
+> You also need to configure each module to use the broker. You'll find the respective config keys in each module's `config.template.*` file.
 
 ## Topic model
 
