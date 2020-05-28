@@ -1,14 +1,20 @@
 # Modules and Common Infrastructure
 
-_Robotrain_ features are split into modules that each can be used independently. All put together they form the full-fledged _Robotrain_, but removing one won't render the others useles.
+_Robotrain_ features are split into modules that each can be used independently. All put together form the full-fledged _Robotrain_, but removing one won't render the others useles. So it's kind of an microservices architecture.
 
-The common communication infrastructure between those modules is _MQTT_, which orders communication in cascaded topics.
+The common communication protocol between those modules is _MQTT_. Additional peer-to-peer connections on different protocols are possible, but the have to be announced and negotiated via _MQTT_.
+
+> You need to set up a _MQTT_ broker, which is not part of _robotrain_ yet. You also need to configure each module to use it. You'll find the respective config keys in each module's `config.template.*` file.
 
 ## Topic model
 
+_MQTT_ organizes communication in cascaded topics. 
+
+> [Learn more about Topics](https://www.hivemq.com/blog/mqtt-essentials-part-5-mqtt-topics-best-practices/)
+
 The root topic is `robotrain`.
 
-Modules can publish to or receive information via topics under their module root topic `robotrain/module-name`.
+Modules can publish to or receive information from topics under their module root topic `robotrain/module-name`.
 
 It's up to the module to structure data below it's root topic.
 
