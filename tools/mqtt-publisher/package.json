@@ -1,0 +1,14 @@
+{
+  "name": "mqtt-publisher",
+  "version": "1.0.0",
+  "description": "Publish a message on a specific MQTT topic",
+  "main": "mqtt-publisher.js",
+  "scripts": {
+    "start": "node mqtt-publisher.js"
+  },
+  "author": "Frederik S. Held (kontakt@frederikheld.de)",
+  "license": "SEE LICENSE IN project root",
+  "dependencies": {
+    "mqtt": "^4.1.0"
+  }
+}
