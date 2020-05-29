@@ -1,12 +1,14 @@
 # Robotrain
 
-_Robotrain_ is the [LEGO® 4558 Metroliner](https://www.bricklink.com/v2/catalog/catalogitem.page?S=4558-1#T=S&O={%22iconly%22:0}) model on steroids. I modified the original LEGO model and augmented it with Arduino, RaspberryPi and several electronic components to make it remote controllable.
+_Robotrain_ is the [LEGO® 4558 Metroliner](https://www.bricklink.com/v2/catalog/catalogitem.page?S=4558-1#T=S&O={%22iconly%22:0}) model on steroids.
+
+I modified the original LEGO model and augmented it with [Arduino](https://www.arduino.cc/), [Raspberry Pi](https://www.raspberrypi.org/) and several electronic components to make it remote controllable.
 
 ![Robotrain in action](media/robotrain-in-action.gif)
 
 The main features are:
 
-* [Jacobs bogies](https://en.wikipedia.org/wiki/Jacobs_bogie) instead of standard bogies
+* More cars which are connected by [Jacobs bogies](https://en.wikipedia.org/wiki/Jacobs_bogie) instead of standard bogies with coupling
 * Train running on 12 V permanently powered tracks
 * Train carries an [Uninterruptible Power Supply](https://en.wikipedia.org/wiki/Uninterruptible_power_supply) that allows it to run on non-powered tracks
 * [NodeMCU Mini](https://en.wikipedia.org/wiki/NodeMCU) with motor driver as [motor control](modules/drivetrain)
@@ -31,12 +33,10 @@ The electronics and software work for all 9 V track-powered train motors and sho
 
 ### Working with the Repository
 
-This repository uses the Git LFS extension for binary files, mainly because _Fritzing_ diagrams are compressed bundles.
-
-Please [activate Git LFS](https://git-lfs.github.com/) before you commit changes to any of the file types listed in [.gitattributes](.gitattrbiutes)!
+This repository uses the Git LFS extension for binary files. Please [activate Git LFS](https://git-lfs.github.com/) before you commit changes to any of the file types listed in [.gitattributes](.gitattrbiutes)!
 
 ### Contribution
 
-If you want to contribute to the main project, please have a look into the [Issues](https://github.com/frederikheld/robo-train/issues) and see if you can submit a pull request that implements one of it. I'm happy to discuss details with you before you start your work.
+I'm happy to accept contributions to the main project!. Please have a look into the [Issues](https://github.com/frederikheld/robo-train/issues) and see if you can submit a pull request that implements one of it. I'm happy to discuss details with you before you start to work. Maybe we can collaborate on a new feature.
 
 You can also submit pull requests for fixes and features that are not alrady in the issues. If I like it, I will merge it ;-)
