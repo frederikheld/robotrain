@@ -15,12 +15,12 @@ The script takes two command line parameters:
 
 First you have to install the dependencies:
 
-```js
-npm install
+```sh
+$ npm install
 ```
 
 Then you can run it with _npm_:
 
-```js
-npm start <topic> <message>
+```sh
+$ npm start <topic> <message>
 ```
