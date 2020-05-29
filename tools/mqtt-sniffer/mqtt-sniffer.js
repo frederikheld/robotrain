@@ -6,7 +6,14 @@ const mqtt = require("mqtt")
 const fs = require('fs')
 const config = JSON.parse(fs.readFileSync('config.json', 'utf8'))
 
-console.log(config)
+
+// read command line parameters:
+
+if (!process.argv[2]) {
+  console.error('ERROR: Missing command line parameter "topic". Usage: "$ npm start <topic>".')
+  return
+}
+const mqttTopic = process.argv[2]
 
 
 // main:
@@ -14,7 +21,7 @@ console.log(config)
 const mqttClient = mqtt.connect("mqtt://" + config.server + ":" + config.port)
 
 mqttClient.on("connect", async () => {
-  await mqttClient.subscribe(config.topic)
+  await mqttClient.subscribe(mqttTopic)
 })
 
 mqttClient.on("message", (topic, message) => {
