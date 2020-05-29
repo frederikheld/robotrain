@@ -11,15 +11,29 @@ The script takes two command line parameters:
 | 1 | topic | The MQTT topic to publish the message to |
 | 2 | message | The message to publish |
 
-### Use with NodeJS & npm
+### Run with Docker
 
-First you have to install the dependencies:
+Initially you have to build the image:
+
+```sh
+$ sudo docker build -t mqtt-publisher .
+```
+
+After the image was built, you can run the container as often as you need:
+
+```sh
+$ sudo docker run --network="host" --rm --name mqtt-publisher mqtt-publisher <topic> <message>
+```
+
+### Run with NodeJS & npm
+
+Initially you have to install the dependencies:
 
 ```sh
 $ npm install
 ```
 
-Then you can run it with _npm_:
+After the dependencies were installed, you can run the script _npm_ as often as you want:
 
 ```sh
 $ npm start <topic> <message>
