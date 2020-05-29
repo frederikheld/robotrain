@@ -1,13 +1,13 @@
 {
   "name": "mqtt-sniffer",
   "version": "1.0.0",
-  "description": "",
+  "description": "Listen to a MQTT topic",
   "main": "mqtt-sniffer.js",
   "scripts": {
     "start": "node mqtt-sniffer.js"
   },
-  "author": "",
-  "license": "MIT",
+  "author": "Frederik S. Held (kontakt@frederikheld.de)",
+  "license": "SEE LICENSE IN project root",
   "dependencies": {
     "mqtt": "^3.0.0"
   }
