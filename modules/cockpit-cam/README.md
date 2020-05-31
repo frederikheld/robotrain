@@ -45,6 +45,23 @@ Enable the camera follow [these instructions](https://www.emmaanuel.com/Use-Rasp
 
 #### _raspivid_ and _netcat_ (latency-free)
 
+First, on the receiving device, run:
+
+> Requires _NetCat_ and _mplayer_
+
+```sh
+netcat -l -p 5000 | mplayer -fps 30 -cache 1024 -framedrop -
+```
+
+Then, on the RasPi, run:
+
+> Requires _RaspiVid_ and _NetCat_
+
+```sh
+$ raspivid -hf -vf -t 0 -w 640 -h 480 -fl -o - | nc 192.168.178.51 500
+0
+```
+
 [Tutorial](https://dantheiotman.com/2017/08/23/using-raspivid-for-low-latency-pi-zero-w-video-streaming/)
 
 ##### Pros
