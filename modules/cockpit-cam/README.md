@@ -35,7 +35,7 @@ We need to manually download a couple of TinyCore modules as the package manager
 
 There's a very good [tutorial on how to do this here](https://www.novaspirit.com/2018/01/09/tiny-core-raspberry-pi-zero-w-install/). The tutorial suggests to copy the packages to the SD card before first boot in the RasPi, but as I tried it the partition was too small to hold all modules. Therefore we resize it first, then do this step.
 
-### Configure the PiCam
+## Configure the PiCam
 
 Enable the camera follow [these instructions](https://www.emmaanuel.com/Use-Raspberry-Camera-Module-with). You might need to look into [this tutorial](https://www.picoreplayer.org/how_to_edit_config_txt.shtml) and follow the steps in the section 'Longhand method—using standard Linux commands' to understand how to edit the `config.txt` mentioned in the instructions.
 
@@ -72,14 +72,8 @@ $ raspivid -hf -vf -t 0 -w 640 -h 480 -fl -o - | nc 192.168.178.51 500
 ##### Cons
 * Due to the use of netcat, the RasPi is sending the stream to one specific device. So it needs to know the IP of the device that wants to receive the stream. This could be handled via MQTT, but still each recipient would require a distinct stream that consumes ressources on the RasPi (if it is even possible).
 
-## TinyCore Extensions
+## Configure MQTT Client
 
-_TinyCore_ is using a package system called _TCE_ (TinyCore Extensions) to install software. It is comparable to _apt_ on Ubuntu. Each TinyCore Extension is packed as a _TCZ_ file.
+There is no MQTT client available as TinyCore Extensions. So we need to build our own.
 
-There's a [repository of officially available TCZ files specifically made for _PiCore_](http://tinycorelinux.net/9.x/armv6/tcz/) (the Tiny Core version adapted for Raspberry Pi).
-
-### Create own TCZ package
-
-You can also create your own TCZ files. Unfortunately the documentation expects a high level of understanding how C build systems work and is also partly unavailable.
-
-The best source is [this forum thread](http://forum.tinycorelinux.net/index.php/topic,17585.msg105532.html). The [mentioned wiki page about creating extensions](http://wiki.tinycorelinux.net/wiki:creating_extensions) is not available as the whole wiki has availability issues. The [corebook.pdf](tinycorelinux.net/corebook.pdf) however is available and in chapter 15 it gives an example on how to create a TCZ package.
+I'm still figuring this out. See [./tutorials/tiny-core-extensions.md](./tutorials/tiny-core-extensions.md)!
