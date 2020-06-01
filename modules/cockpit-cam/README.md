@@ -39,6 +39,53 @@ There's a very good [tutorial on how to do this here](https://www.novaspirit.com
 
 Enable the camera follow [these instructions](https://www.emmaanuel.com/Use-Raspberry-Camera-Module-with). You might need to look into [this tutorial](https://www.picoreplayer.org/how_to_edit_config_txt.shtml) and follow the steps in the section 'Longhand method—using standard Linux commands' to understand how to edit the `config.txt` mentioned in the instructions.
 
+On the RasPi, mount the boot partition:
+
+```sh
+$ mount /mnt/mmcblk0p1
+```
+
+Add the following lines at the end of `/mnt/mmcblk0p1/config.txt`:
+
+```
+gpu_mem=128
+start_file=start_x.elf
+start_fixup=fixup_x.dat
+disable_camera_led=1
+```
+
+In the same file, change the following line:
+
+```
+dtparam=i2c=on,spi=on,i2s=on #before
+dtparam=i2c=on,spi=on,i2s=on,i2s_vc=off #after
+```
+
+Install _raspivid_ through `tce-load`:
+
+```sh
+$ tce-load -wi rpi-vc.tcz
+$ sudo chmod 777 /dev/vchiq
+$ filetool.sh -b
+```
+
+After that, restart your RasPi with:
+```sh
+$ sudo reboot
+```
+
+#### Troubleshooting
+
+* `/dev/vchiq` doesn't exist because the camera isn't connected properly
+    * check if ribbon cable sits correctly in both connectors and isn't bend
+    * check if the connector that connects the black camera unit with the board of the camera sits correctly
+* `start-stream.sh` quits immediately. Check with `raspistill`. If you get `failed to open vchiq instance`:
+    * You need to run raspistill/raspivid as `sudo`!
+    * Alternative: add your user to the `video`group: `$ sudo usermod -a -G video $USER`
+* `Camera is not enabled in this build. Try running "sudo raspi-config" and ensure that "camera" has been enabled`
+    * See [this post](http://forum.tinycorelinux.net/index.php?topic=19743.0) for hints on how to solve the issue
+
+
 ### Streaming options
 
 * [This page](https://wiki.marcluerssen.de/index.php?title=Raspberry_Pi/Camera_streaming) gives an overview over the different ways to stream video from the RasPi.
@@ -50,7 +97,7 @@ First, on the receiving device, run:
 > Requires _NetCat_ and _mplayer_
 
 ```sh
-netcat -l -p 5000 | mplayer -fps 30 -cache 1024 -framedrop -
+$ netcat -l -p 5000 | mplayer -fps 30 -cache 1024 -framedrop -
 ```
 
 Then, on the RasPi, run:
@@ -58,8 +105,7 @@ Then, on the RasPi, run:
 > Requires _RaspiVid_ and _NetCat_
 
 ```sh
-$ raspivid -hf -vf -t 0 -w 640 -h 480 -fl -o - | nc 192.168.178.51 500
-0
+$ raspivid -hf -vf -t 0 -w 640 -h 480 -fl -o - | nc 192.168.178.51 5000
 ```
 
 [Tutorial](https://dantheiotman.com/2017/08/23/using-raspivid-for-low-latency-pi-zero-w-video-streaming/)
@@ -72,8 +118,70 @@ $ raspivid -hf -vf -t 0 -w 640 -h 480 -fl -o - | nc 192.168.178.51 500
 ##### Cons
 * Due to the use of netcat, the RasPi is sending the stream to one specific device. So it needs to know the IP of the device that wants to receive the stream. This could be handled via MQTT, but still each recipient would require a distinct stream that consumes ressources on the RasPi (if it is even possible).
 
-## Configure MQTT Client
+## Setup MQTT Client
+
+As there's no ready-to-use MQTT client in the piCore extension repository, I have to figure out a way to do this.
+
+> This is still work in progress!
+
+### Option A: Via self-made extension
 
 There is no MQTT client available as TinyCore Extensions. So we need to build our own.
 
 I'm still figuring this out. See [./tutorials/tiny-core-extensions.md](./tutorials/tiny-core-extensions.md)!
+
+> I didn't continue this approach. See option B instead!
+
+
+### Option B: via Python script
+
+Install Python3.6 extension via TCE:
+
+```sh
+$ tce-load -wi python3.6.tcz
+```
+
+Now you can start Python scripts with 
+
+```sh
+$ python3.6 myscript.py
+```
+
+and install packages with
+
+```sh
+$ pip3.6 install my-package
+```
+
+Install `Paho MQTT`:
+
+```sh
+$ pip3.6 install paho-mqtt
+```
+
+> If you get a "permission denied" error, run it again as `sudo -H`.
+
+pip packages will not be persisted in standard configuration of piCore. To perist it, you have to add the package install directory to `/opt/.filetool.lst`, which is a list of all directories backed up when running `filetool.sh -b`.
+
+To find the install path, check the details of the recently installed `paho-mqtt` package:
+
+```sh
+$ pip3.6 show paho-mqtt
+```
+
+The output will contain a line beginning with `Location:` that most probably will have the value `/usr/local/lib/python3.6/site-packages`.
+
+Add it as a new line at the end of `/opt/.filetool.lst` with
+
+```sh
+$ sudo echo 'usr/local/lib/python3.6/site-packages' >> /opt/.filetool.lst
+```
+
+Note that the leading slash is being omitted!
+
+Then run
+
+```sh
+$ filetool.sh -b
+```
+
