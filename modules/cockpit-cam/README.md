@@ -185,3 +185,55 @@ Then run
 $ filetool.sh -b
 ```
 
+## Development
+
+All files that need to be copied to the RasPi are located in `./raspi`.
+
+You can either copy those files to RasPi and the work via SSH (which can be slow), or work locally and sync changes to RasPi. Either way, the simplest and most efficient way is to use `rsync`.
+
+### Sync files to RasPi
+
+`rsync` needs to be installed on both sides. Most Linux distributions already come with it.
+
+On RasPi, you can install the package `rsync.tcz` via
+
+```sh
+$ tce-load -wi rsync.tcz
+$ filetool.sh -b
+```
+
+On your computer, navigate to `./raspi`, then run
+
+```sh
+$ rsync --delete -avz ./cockpit-cam tc@box:/home/tc
+```
+
+`rsync` will only transfer the files that have changed. It will also delete files in the target that have been deleted in the source.
+
+### Run
+
+On RasPi, start the MQTT client:
+
+```sh
+$ python3.6 mqtt-client.py
+```
+
+It will now wait for messages on topic _robotrain/cockpit-cam/request-stream_.
+
+On any other device that can talk with the MQTT broker, start _mplayer_ to be ready to receive a stream. There's already a script that issues the neccessary comand:
+
+```sh
+$ sh start-stream.sh
+```
+
+Then use the [_mqtt-publisher_ tool](../../tools/mqtt-publisher/README.md) that comes with this repo to publish the IP of your device via the above topic:
+
+```sh
+$ node mqtt-publisher.js "robotrain/cockpit-cam/request-stream" <ip>
+```
+
+After a couple of seconds a window should open that shows the video stream.
+
+You can close that window to end the stream. 
+
+To start it again, run `$ sh start-stream.sh` again and then send the MQTT message again.
