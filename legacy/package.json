@@ -7,7 +7,7 @@
   "author": "Frederik Held <kontakt@frederikheld.de>",
   "license": "GPL-3.0",
   "dependencies": {
-    "express": "^4.14.1",
+    "express": "^4.17.3",
     "serve-static": "^1.11.2",
     "socket.io": "^1.7.3",
     "wiring-pi": "^2.2.1"
